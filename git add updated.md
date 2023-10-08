@@ -2,7 +2,7 @@ git add package.json yarn.lock
 
 git status
 
-git commit -m "updat path logos"
+git commit -m "updat company"
 
 git push origin main
 
