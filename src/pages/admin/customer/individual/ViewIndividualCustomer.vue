@@ -1,6 +1,33 @@
 <template>
   <div>
-    <h2 class="intro-y text-lg font-medium mt-10">Costomers</h2>
+    <h2 class="intro-y text-lg font-medium mt-10">Customers</h2>
+    <div v-if="loading">
+      <div class="spinner-border text-primary" role="status">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-loader"
+        >
+          <line x1="12" x2="12" y1="2" y2="6" />
+          <line x1="12" x2="12" y1="18" y2="22" />
+          <line x1="4.93" x2="7.76" y1="4.93" y2="7.76" />
+          <line x1="16.24" x2="19.07" y1="16.24" y2="19.07" />
+          <line x1="2" x2="6" y1="12" y2="12" />
+          <line x1="18" x2="22" y1="12" y2="12" />
+          <line x1="4.93" x2="7.76" y1="19.07" y2="16.24" />
+          <line x1="16.24" x2="19.07" y1="7.76" y2="4.93" />
+        </svg>
+        <span class="sr-only">Loading...</span>
+      </div>
+      <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+    </div>
     <div class="grid grid-cols-12 gap-6 mt-5">
       <div
         class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2"
@@ -19,7 +46,6 @@
               data-lucide="search"
             ></i>
           </div>
-       
         </div>
 
         <div class="hidden xl:block mx-auto text-slate-500">
@@ -27,9 +53,9 @@
           {{ count }} entries
         </div>
         <div class="w-full xl:w-auto flex items-center mt-3 xl:mt-0">
-          <button class="btn btn-primary shadow-md mr-2" @click="exportToExcel">
+          <!-- <button class="btn btn-primary shadow-md mr-2" @click="exportToExcel">
             <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Export to Excel
-          </button>
+          </button> -->
         </div>
       </div>
 
@@ -85,11 +111,11 @@
                   class="text-slate-500 text-xs whitespace-nowrap mt-0.5"
                   v-if="indivUser.plan && indivUser.plan.length > 0"
                 >
-                  {{ indivUser.plan[0].planPrice }}
+                  {{ formatCurrency(indivUser.plan[0].planPrice) }}
                 </div>
               </td>
               <td class="w-40 text-right">
-                <div class="pr-16">{{ indivUser.monthlyFee }}</div>
+                <div class="pr-16">{{ formatCurrency(indivUser.monthlyFee) }}</div>
               </td>
               <td class="w-40 !py-4">
                 <div
@@ -101,7 +127,32 @@
               </td>
               <td class="table-report__action">
                 <div class="flex justify-center items-center">
-                  <a
+                  <a v-if="indivUser.relation !== 'Main'"
+                    class="flex items-center text-primary whitespace-nowrap mr-5"
+                    href="javascript:;"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="w-4 h-4 mr-1 lucide lucide-check-square"
+                    >
+                      <polyline points="9 11 12 14 22 4" />
+                      <path
+                        d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                      />
+                    </svg>
+                    <router-link :to="`/dependentprofile/${indivUser._id}`"
+                      >Details</router-link
+                    >
+                  </a>
+                  <a v-if="indivUser.relation === 'Main'"
                     class="flex items-center text-primary whitespace-nowrap mr-5"
                     href="javascript:;"
                   >
@@ -126,9 +177,10 @@
                       >Details</router-link
                     >
                   </a>
-                  <a
+                  <a 
                     class="flex items-center text-primary whitespace-nowrap mr-5"
                     href="javascript:;"
+                    v-if="indivUser.relation === 'Main' && indivUser.status === 'Active'"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -147,35 +199,9 @@
                         d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
                       />
                     </svg>
-                    <router-link :to="`/createdependent/${indivUser._id}`"
-                      >Add</router-link
+                    <router-link :to="`/createdependentindividual/${indivUser._id}`"
+                      >Add dependets</router-link
                     >
-                  </a>
-                  <a
-                    class="flex items-center text-primary whitespace-nowrap"
-                    href="javascript:;"
-                    data-tw-toggle="modal"
-                    data-tw-target="#delete-confirmation-modal"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-4 h-4 mr-1 lucide lucide-arrow-left-right"
-                    >
-                      <path d="M8 3 4 7l4 4" />
-                      <path d="M4 7h16" />
-                      <path d="m16 21 4-4-4-4" />
-                      <path d="M20 17H4" />
-                    </svg>
-
-                    Status
                   </a>
                 </div>
               </td>
@@ -218,7 +244,12 @@
               </a>
             </li>
 
-            <li class="page-item" v-for="page in totalPages" :key="page">
+            <li
+              class="page-item"
+              v-for="page in totalPages"
+              :key="page"
+              :class="{ active: isActivePage(page) }"
+            >
               <a class="page-link" @click="goToPage(page)">{{ page }}</a>
             </li>
 
@@ -234,10 +265,10 @@
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="w-4 h-4 lucide lucide-chevrons-right"
+                  class="w-4 h-4 lucide lucide lucide-chevrons-right"
                 >
-                  <path d="m11 17-5-5 5-5" />
-                  <path d="m18 17-5-5 5-5" />
+                  <path d="m6 17 5-5-5-5" />
+                  <path d="m13 17 5-5-5-5" />
                 </svg>
               </a>
             </li>
@@ -252,6 +283,9 @@
           <option>25</option>
           <option>35</option>
           <option>50</option>
+          <option>100</option>
+          <option>500</option>
+          <option>1000</option>
         </select>
       </div>
       <!-- END: Pagination -->
@@ -301,7 +335,7 @@
 import { utils, writeFile } from "xlsx";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
-
+import Cookies from "js-cookie";
 export default {
   data() {
     return {
@@ -317,13 +351,37 @@ export default {
       searchTerm: "",
     };
   },
+  computed: {
+    hasPreviousPage() {
+      return this.currentPage > 1;
+    },
+    hasNextPage() {
+      return this.currentPage < this.totalPages;
+    },
+  },
+  watch: {
+    currentPage: "fetchData",
+    pageSize: "fetchData",
+    searchTerm: "fetchData",
+  },
   methods: {
+    formatCurrency(value) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      return formatter.format(value);
+    },
+    isActivePage(page) {
+      return page === this.currentPage;
+    },
     async fetchData() {
       try {
         this.loading = true;
 
-        const token = localStorage.getItem("token");
-        const response = await axios.get("/user/invididual/allindividualuser", {
+        const token = Cookies.get("token");
+        const response = await axios.get("/api/user/invididual/allindividualuser", {
           headers: {
             token: token,
           },
@@ -334,10 +392,10 @@ export default {
           },
         });
 
-        this.indivUsers = response.data.userIndividual;
+        this.indivUsers = response.data.users;
         this.count = response.data.count;
         this.totalPages = Math.ceil(this.count / this.pageSize);
-
+       
         // Update the firstEntryIndex and lastEntryIndex values based on the current page and pageSize
         this.firstEntryIndex = (this.currentPage - 1) * this.pageSize + 1;
         this.lastEntryIndex = Math.min(

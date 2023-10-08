@@ -1,129 +1,255 @@
 <template>
   <div>
     <div class="intro-y flex items-center mt-8">
-      <h2 class="text-lg font-medium mr-auto">Create Partner User</h2>
+      <h2 class="text-lg font-medium mr-auto">
+        Create user for {{ partnerName }}
+      </h2>
+      <div v-if="loading">
+        <div class="spinner-border text-primary" role="status">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-loader"
+          >
+            <line x1="12" x2="12" y1="2" y2="6" />
+            <line x1="12" x2="12" y1="18" y2="22" />
+            <line x1="4.93" x2="7.76" y1="4.93" y2="7.76" />
+            <line x1="16.24" x2="19.07" y1="16.24" y2="19.07" />
+            <line x1="2" x2="6" y1="12" y2="12" />
+            <line x1="18" x2="22" y1="12" y2="12" />
+            <line x1="4.93" x2="7.76" y1="19.07" y2="16.24" />
+            <line x1="16.24" x2="19.07" y1="7.76" y2="4.93" />
+          </svg>
+          <span class="sr-only">Loading...</span>
+        </div>
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+      </div>
     </div>
-    <form>
+    <form
+      @submit.prevent="onCreateIndivitualCustomer"
+      enctype="multipart/form-data"
+      data-single="true"
+      action="/file-upload"
+    >
       <div class="grid grid-cols-12 gap-6 mt-5">
         <div class="intro-y col-span-12 lg:col-span-6">
           <!-- BEGIN: Form Layout -->
           <div class="intro-y box p-5">
-            <div>
-              <label for="crud-form-1" class="form-label">Firt Name</label>
-              <input
-                id="crud-form-1"
-                type="text"
-                class="form-control w-full"
-                placeholder="name"
-                required
-              />
-            </div>
-
-            <div class="mt-3">
-              <label for="crud-form-3" class="form-label">Last Name</label>
-              <div class="input-group">
-                <input
-                  id="crud-form-3"
-                  type="text"
-                  class="form-control"
-                  placeholder="location"
-                  aria-describedby="input-group-1"
-                  required
-                />
-              </div>
-            </div>
-            <div class="mt-3">
-              <label class="form-label">ID</label> /
-              <label class="form-label">DOB</label>
-              <div class="sm:grid grid-cols-3 gap-2">
-                <div class="input-group">
-                  <select
-                  class="form-select mt-2 sm:mr-2"
-                  aria-label="Default select example"
+            <div class="grid grid-cols-2 gap-6 mt-3">
+              <div>
+                <label for="crud-form-15" class="form-label"
+                  >First name *</label
                 >
-                  <option>ID</option>
-                  <option>Drice licence</option>
-                  <option>Voter card</option>
-                </select>
-                </div>
-                <div class="input-group mt-2 sm:mt-0">
+                <div class="input-group">
                   <input
+                    v-model="firstName"
+                    id="crud-form-16"
                     type="text"
                     class="form-control"
-                    placeholder="Doc Number"
-                    aria-describedby="input-group-4"
+                    placeholder="first name"
+                    aria-describedby="input-group-1"
                   />
                 </div>
-                <div class="input-group mt-2 sm:mt-0">
-                  <input type="date" class="datepicker form-control w-36 block mx-auto" data-single-mode="true"> 
-                </div>
               </div>
-            </div>
-            <div class="mt-3">
-              <label for="crud-form-3" class="form-label">Email</label>
-              <div class="input-group">
-                <input
-                  id="crud-form-3"
-                  type="text"
-                  class="form-control"
-                  placeholder="email"
-                  aria-describedby="input-group-1"
-                />
-              </div>
-            </div>
-            <div class="mt-3">
-              <label for="crud-form-3" class="form-label">Partner</label>
-              <div class="input-group">
-                <select
-                  class="form-select mt-2 sm:mr-2"
-                  aria-label="Default select example"
-                >
-                  <option>Shiffa Clinic</option>
-                  <option>HCM</option>
-                  <option>Privada</option>
-                </select>
-              </div>
-            </div>
-            <div class="mt-3">
-              <label for="crud-form-3" class="form-label">Role</label>
-              <div class="input-group">
-                <input
-                  id="crud-form-3"
-                  type="text"
-                  class="form-control"
-                  placeholder="role name"
-                  aria-describedby="input-group-1"
-                />
-              </div>
-            </div>
-
-            <div class="mt-3">
-              <label class="form-label">Contacts</label>
-              <div class="sm:grid grid-cols-3 gap-2">
+              <div>
+                <label for="crud-form-4" class="form-label">Last name *</label>
                 <div class="input-group">
                   <input
-                    type="number"
+                    v-model="lastName"
+                    id="crud-form-5"
+                    type="text"
                     class="form-control"
-                    placeholder="contact 1"
-                    aria-describedby="input-group-3"
+                    placeholder="last name"
+                    aria-describedby="input-group-1"
                   />
                 </div>
-                <div class="input-group mt-2 sm:mt-0">
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-6 mt-3">
+              <div>
+                <label for="crud-form-19" class="form-label">ID Type *</label>
+                <div class="input-group">
+                  <select
+                    class="form-select"
+                    aria-label="Default select example"
+                    v-model="idType"
+                  >
+                    <option>ID</option>
+                    <option>Drive Licence</option>
+                    <option>Passport</option>
+                    <option>Voters</option>
+                    <option>...</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">ID Number *</label>
+                <div class="input-group">
                   <input
-                    type="number"
+                    v-model="idNumber"
+                    id="crud-form-6"
+                    type="text"
                     class="form-control"
-                    placeholder="contact 2"
-                    aria-describedby="input-group-4"
+                    placeholder="id number"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">DOB *</label>
+                <div class="input-group">
+                  <input
+                    v-model="dob"
+                    id="crud-form-4"
+                    type="date"
+                    class="form-control"
+                    placeholder="date"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mt-3">
+              <div>
+                <label for="crud-form-17" class="form-label">Gender *</label>
+                <div class="input-group">
+                  <select
+                    v-model="gender"
+                    class="form-select"
+                    aria-label="Default select example"
+                  >
+                    <option>male</option>
+                    <option>female</option>
+                    <option>other</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">Email *</label>
+                <div class="input-group">
+                  <input
+                    v-model="email"
+                    id="crud-form-10"
+                    type="text"
+                    class="form-control"
+                    placeholder="email"
+                    aria-describedby="input-group-1"
                   />
                 </div>
               </div>
             </div>
 
-            <div class="text-right mt-5">
-              <button type="button" class="btn btn-outline-secondary w-24 mr-1">
+            <div class="mt-3">
+              <label for="crud-form-4" class="form-label">Address *</label>
+              <div class="input-group">
+                <input
+                  v-model="address"
+                  id="crud-form-11"
+                  type="text"
+                  class="form-control mt-2 sm:mr-2"
+                  placeholder="address"
+                  aria-describedby="input-group-1"
+                />
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <label for="crud-form-4" class="form-label">Profile *</label>
+              <div class="input-group">
+                <input
+                  v-model="profile"
+                  id="crud-form-12"
+                  type="text"
+                  class="form-control mt-2 sm:mr-2"
+                  placeholder="profile"
+                  aria-describedby="input-group-1"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6 mt-3">
+              <div>
+                <label for="crud-form-4" class="form-label">Contact *</label>
+                <div class="input-group">
+                  <input
+                    v-model="contact1"
+                    id="crud-form-13"
+                    type="number"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="contact"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">Contact 2</label>
+                <div class="input-group">
+                  <input
+                    v-model="contact2"
+                    id="crud-form-14"
+                    type="number"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="contact"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">Password</label>
+                <div class="input-group">
+                  <input
+                    v-model="password"
+                    id="crud-form-15"
+                    type="password"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="password"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 mt-3">
+              <div>
+                <label for="crud-form-4" class="form-label"
+                  >Select Avatar</label
+                >
+
+                <div class="fallback mt-4">
+                  <input
+                    id="fileInput"
+                    ref="fileInput"
+                    type="file"
+                    accept=".jpg, .jpeg, .png, .pdf"
+                    @change="onFileChange"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="text-right mt-8">
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-24 mr-1"
+                @click="goBack"
+              >
                 Cancel
               </button>
-              <button type="button" class="btn btn-primary w-24">Save</button>
+
+              <button
+                type="submit"
+                class="btn btn-primary w-24"
+                :disabled="btnloading"
+              >
+                Save
+              </button>
             </div>
           </div>
           <!-- END: Form Layout -->
@@ -132,10 +258,183 @@
     </form>
   </div>
 </template>
+
 <script>
+import Cookies from "js-cookie";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import "sweetalert2/dist/sweetalert2.css";
+
+import axios from "axios";
+
 export default {
   data() {
-    return {};
+    return {
+      firstName: "",
+      lastName: "",
+      idType: "",
+      idNumber: "",
+      dob: "",
+      gender: "",
+      email: "",
+      address: "",
+      profile: "",
+      contact1: "",
+      contact2: "",
+      partnerName: "",
+      manager: "",
+      password: "",
+      avatar: null,
+      plans: [],
+      partners: [],
+      loading: false,
+      btnloading: false,
+    };
+  },
+  methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
+   
+    onFileChange(event) {
+      const file = event.target.files[0]; // Get the selected file
+
+      // Set the file object to the avatar property
+      this.avatar = file;
+    },
+    async getPartner() {
+      this.loading = true;
+      const token = Cookies.get("token");
+      const id = this.$route.params.id
+      try {
+        const response = await axios.get(`/api/partner/${id}`, {
+          headers: {
+            token: token,
+          },
+        });
+        if (response.data.success) {
+          this.partnerName = response.data.partner.partnerName;
+          this.loading = false;
+        } else {
+          throw new Error("Failed to fetch plans");
+        }
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+        this.loading = false;
+      }
+    },
+    async onCreateIndivitualCustomer() {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+
+      const token = Cookies.get("token");
+      const requiredFields = [
+        "firstName",
+        "lastName",
+        "idType",
+        "idNumber",
+        "dob",
+        "gender",
+        "email",
+        "address",
+        "profile",
+        "contact1",
+      ];
+
+      for (const field of requiredFields) {
+        if (this[field] === "") {
+          Swal.fire({
+            icon: "warning",
+            title: "Warning!",
+            toast: true,
+            text: `${field} cannot be empty`,
+            timer: 3000,
+            showConfirmButton: false,
+            position: "top-end",
+          });
+          return;
+        }
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("firstName", this.firstName);
+        formData.append("lastName", this.lastName);
+        formData.append("idType", this.idType);
+        formData.append("idNumber", this.idNumber);
+        formData.append("dob", this.dob);
+        formData.append("gender", this.gender);
+        formData.append("email", this.email);
+        formData.append("address", this.address);
+        formData.append("profile", this.address);
+        formData.append("contact1", this.contact1);
+        formData.append("contact2", this.contact2);
+        formData.append("avatar", this.avatar);
+        formData.append("id", this.$route.params.id);
+        formData.append("password", this.password);
+
+        this.loading = true;
+
+        const response = await axios.post(
+          "/api/user/partneruser/create",
+          formData,
+          {
+            headers: {
+              token: token,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        this.loading = false;
+        Toast.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Partner user created successfully",
+          timer: 3000,
+        });
+
+        this.$router.go(-1);
+        this.isSuccess = true;
+        console.log(response);
+        this.$emit("postcreated");
+      } catch (error) {
+        this.loading = false;
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          this.errorMessage = error.response.data.error;
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: this.errorMessage,
+          });
+          console.error("Error creating post:", this.errorMessage);
+        } else {
+          this.errorMessage = "An error occurred. Please try again.";
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: this.errorMessage,
+          });
+
+          console.error("Error creating post:", error.message);
+        }
+      }
+    },
+  },
+  created() {
+    this.getPartner()
   },
 };
 </script>

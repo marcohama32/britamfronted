@@ -1,137 +1,304 @@
 <template>
   <div>
+    <label v-if="loading" class="shadow-md">
+      <div class="spinner" style="font-size: 18px"></div>
+    </label>
     <div class="intro-y flex items-center mt-8">
-      <h2 class="text-lg font-medium mr-auto">Create Customer Corporate</h2>
+      <h2 class="text-lg font-medium mr-auto">
+        Add Customer on {{ company }} account
+      </h2>
     </div>
-    <form>
+    <form
+      @submit.prevent="onCreateCorporateCustomer"
+      enctype="multipart/form-data"
+      data-single="true"
+      action="/file-upload"
+    >
       <div class="grid grid-cols-12 gap-6 mt-5">
         <div class="intro-y col-span-12 lg:col-span-6">
           <!-- BEGIN: Form Layout -->
           <div class="intro-y box p-5">
             <div class="grid grid-cols-2 gap-6 mt-3">
               <div>
-                <label for="crud-form-3" class="form-label">First name</label>
+                <label for="crud-form-15" class="form-label"
+                  >First name *</label
+                >
                 <div class="input-group">
                   <input
-                    id="crud-form-3"
+                    v-model="firstName"
+                    id="crud-form-16"
                     type="text"
                     class="form-control"
                     placeholder="first name"
                     aria-describedby="input-group-1"
-                    required
                   />
                 </div>
               </div>
               <div>
-                <label for="crud-form-4" class="form-label">Last name</label>
+                <label for="crud-form-4" class="form-label">Last name *</label>
                 <div class="input-group">
                   <input
-                    id="crud-form-4"
+                    v-model="lastName"
+                    id="crud-form-5"
                     type="text"
                     class="form-control"
                     placeholder="last name"
                     aria-describedby="input-group-1"
-                    required
                   />
                 </div>
               </div>
             </div>
-
-            <div class="mt-3">
-              <label for="crud-form-3" class="form-label">Email</label>
-              <div class="input-group">
-                <input
-                  id="crud-form-3"
-                  type="text"
-                  class="form-control"
-                  placeholder="email"
-                  aria-describedby="input-group-1"
-                />
-              </div>
-            </div>
-            <div class="mt-3">
-              <label for="crud-form-3" class="form-label">Company</label>
-              <div class="input-group">
-                <select
-                    class="form-select mt-2 sm:mr-2"
-                    aria-label="Default select example"
-                  >
-                    <option>EDM</option>
-                    <option>CDM</option>
-                    <option>CFM</option>
-                  </select>
-              </div>
-            </div>
-
             <div class="grid grid-cols-3 gap-6 mt-3">
               <div>
-                <label for="crud-form-3" class="form-label">Gender</label>
-                <div class="input-group" >
+                <label for="crud-form-19" class="form-label">ID Type *</label>
+                <div class="input-group">
                   <select
-                    class="form-select mt-2 sm:mr-2"
+                    class="form-select"
                     aria-label="Default select example"
+                    v-model="idType"
                   >
-                    <option>M</option>
-                    <option>W</option>
-                    <option>Other</option>
+                    <option>ID</option>
+                    <option>Drive Licence</option>
+                    <option>Passport</option>
+                    <option>Voters</option>
+                    <option>...</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label for="crud-form-4" class="form-label">Relation</label>
+                <label for="crud-form-4" class="form-label">ID Number *</label>
+                <div class="input-group">
+                  <input
+                    v-model="idNumber"
+                    id="crud-form-6"
+                    type="text"
+                    class="form-control"
+                    placeholder="id number"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">DOB *</label>
+                <div class="input-group">
+                  <input
+                    v-model="dob"
+                    id="crud-form-4"
+                    type="date"
+                    class="form-control"
+                    placeholder="date"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-6 mt-3">
+              <div>
+                <label for="crud-form-4" class="form-label"
+                  >Enrolment date *</label
+                >
+                <div class="input-group">
+                  <input
+                    v-model="enrolmentDate"
+                    id="crud-form-7"
+                    type="date"
+                    class="form-control"
+                    placeholder="enrolment date"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-17" class="form-label">Gender *</label>
                 <div class="input-group">
                   <select
-                    class="form-select mt-2 sm:mr-2"
+                    v-model="gender"
+                    class="form-select"
                     aria-label="Default select example"
                   >
-                    <option>Main member</option>
-                    <option>Wife</option>
-                    <option>Daughter</option>
+                    <option>male</option>
+                    <option>female</option>
+                    <option>other</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label for="crud-form-4" class="form-label">Relation Owner</label>
+                <label for="crud-form-20" class="form-label"
+                  >Monthly fee *</label
+                >
+                <div class="input-group">
+                  <input
+                    v-model="monthlyFee"
+                    id="crud-form-20"
+                    type="number"
+                    min="1"
+                    step="0.01"
+                    class="form-control"
+                    placeholder="monthly fee"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mt-3">
+              <div>
+                <label for="crud-form-18" class="form-label">Plan *</label>
                 <div class="input-group">
                   <select
-                    class="form-select mt-2 sm:mr-2"
+                    v-model="plan"
+                    class="form-control mt-2 sm:mr-2"
                     aria-label="Default select example"
                   >
-                    <option>Gualter Fone</option>
-                    <option>Marco Hama</option>
-                    <option>Gino Mussagy</option>
+                    <option
+                      v-for="planItem in plans"
+                      :key="planItem._id"
+                      :value="planItem._id"
+                    >
+                      {{ planItem.planName }} -
+                      {{ formatCurrency(planItem.planPrice) }}
+                    </option>
                   </select>
                 </div>
               </div>
-            </div>
-
-            <div class="mt-3">
-              <label class="form-label">Contacts</label>
-              <div class="grid grid-cols-3 gap-2 sm:grid-cols-1 sm:gap-0">
+              <div>
+                <label for="crud-form-21" class="form-label"
+                  >MemberShip ID *</label
+                >
                 <div class="input-group">
                   <input
-                    type="number"
-                    class="form-control"
-                    placeholder="contact 1"
-                    aria-describedby="input-group-3"
+                    v-model="memberShipID"
+                    id="crud-form-21"
+                    type="text"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="memberShipID"
+                    aria-describedby="input-group-1"
                   />
                 </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mt-3">
+              <div>
+                <label for="crud-form-4" class="form-label">Email *</label>
                 <div class="input-group">
                   <input
+                    v-model="email"
+                    id="crud-form-10"
+                    type="text"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="email"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">Address *</label>
+                <div class="input-group">
+                  <input
+                    v-model="address"
+                    id="crud-form-11"
+                    type="text"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="address"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-6 mt-3">
+              <div>
+                <label for="crud-form-4" class="form-label">Contact *</label>
+                <div class="input-group">
+                  <input
+                    v-model="contact1"
+                    id="crud-form-12"
                     type="number"
-                    class="form-control"
-                    placeholder="contact 2"
-                    aria-describedby="input-group-4"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="contact"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">Contact 2</label>
+                <div class="input-group">
+                  <input
+                    v-model="contact2"
+                    id="crud-form-13"
+                    type="number"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="contact"
+                    aria-describedby="input-group-1"
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label">Password</label>
+                <div class="input-group">
+                  <input
+                    v-model="password"
+                    id="crud-form-14"
+                    type="password"
+                    class="form-control mt-2 sm:mr-2"
+                    placeholder="password"
+                    aria-describedby="input-group-1"
                   />
                 </div>
               </div>
             </div>
 
-            <div class="text-right mt-5">
-              <button type="button" class="btn btn-outline-secondary w-24 mr-1">
+            <div class="grid grid-cols-2 gap-6 mt-3">
+              <div>
+                <label for="crud-form-4" class="form-label">Manager *</label>
+                <div class="input-group">
+                  <select
+                    v-model="manager"
+                    class="form-control mt-2 sm:mr-2"
+                    aria-label="Default select example"
+                  >
+                    <option
+                      v-for="Item in managers"
+                      :key="Item._id"
+                      :value="Item._id"
+                    >
+                      {{ Item.firstName }} {{ Item.lastName }} -
+                      {{ Item.contact1 }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="crud-form-4" class="form-label"
+                  >Select Avatar</label
+                >
+
+                <div class="fallback mt-4">
+                  <input
+                    id="fileInput"
+                    ref="fileInput"
+                    type="file"
+                    accept=".jpg, .jpeg, .png, .pdf"
+                    @change="onFileChange"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="text-right mt-8">
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-24 mr-1"
+                @click="goBack"
+              >
                 Cancel
               </button>
-              <button type="button" class="btn btn-primary w-24">Save</button>
+
+              <button
+                type="submit"
+                class="btn btn-primary w-24"
+                :disabled="btnloading"
+              >
+                Save
+              </button>
             </div>
           </div>
           <!-- END: Form Layout -->
@@ -142,9 +309,273 @@
 </template>
 
 <script>
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import "sweetalert2/dist/sweetalert2.css";
+
+import axios from "axios";
+import Cookies from "js-cookie";
 export default {
   data() {
-    return {};
+    return {
+      firstName: "",
+      lastName: "",
+      idType: "",
+      idNumber: "",
+      dob: "",
+      enrolmentDate: "",
+      memberShipID: "",
+      gender: "",
+      monthlyFee: "",
+      plan: "",
+      email: "",
+      address: "",
+      contact1: "",
+      contact2: "",
+      manager: "",
+      password: "",
+      avatar: null,
+      plans: [],
+      managers: [],
+      company: "",
+      loading: false,
+      btnloading: false,
+    };
+  },
+  methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
+    formatCurrency(value) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      return formatter.format(value);
+    },
+    onFileChange(event) {
+      const file = event.target.files[0]; // Get the selected file
+
+      // Set the file object to the avatar property
+      this.avatar = file;
+    },
+    async getPlans() {
+      this.loading = true;
+      try {
+        const token = Cookies.get("token");
+        const response = await axios.get(
+          "/api/active/allplans",
+
+          {
+            headers: {
+              token: token,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response.data.success) {
+          this.plans = response.data.plan;
+          this.loading = false;
+        } else {
+          throw new Error("Failed to fetch plans");
+        }
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+        this.loading = false;
+      }
+    },
+    async getMagers() {
+      this.loading = true;
+      const token = Cookies.get("token");
+      try {
+        const response = await axios.get("/api/user/employer/agent/active/get", {
+          headers: {
+            token: token,
+          },
+        });
+        if (response.data.success) {
+          this.managers = response.data.employer;
+          this.loading = false;
+        } else {
+          throw new Error("Failed to fetch plans");
+        }
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+        this.loading = false;
+      }
+    },
+    async getCompany() {
+      const id = this.$route.params.id;
+      this.loading = true;
+      const token = Cookies.get("token");
+      try {
+        const response = await axios.get(`/api/company/${id}`, {
+          headers: {
+            token: token,
+          },
+        });
+        if (response.data.success) {
+          this.company = response.data.company.companyName;
+          this.loading = false;
+        } else {
+          throw new Error("Failed to fetch plans");
+        }
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+        this.loading = false;
+      }
+    },
+    async onCreateCorporateCustomer() {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+      const token = Cookies.get("token");
+      const requiredFields = [
+        "firstName",
+        "lastName",
+        "idType",
+        "idNumber",
+        "dob",
+        "enrolmentDate",
+        "memberShipID",
+        "gender",
+        "monthlyFee",
+        "plan",
+        "email",
+        "address",
+        "contact1",
+        "manager",
+        "company",
+      ];
+
+      for (const field of requiredFields) {
+        if (this[field] === "") {
+          Swal.fire({
+            icon: "warning",
+            title: "Warning!",
+            toast: true,
+            text: `${field} cannot be empty`,
+            timer: 3000,
+            showConfirmButton: false,
+            position: "top-end",
+          });
+          return;
+        }
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("firstName", this.firstName);
+        formData.append("lastName", this.lastName);
+        formData.append("idType", this.idType);
+        formData.append("idNumber", this.idNumber);
+        formData.append("dob", this.dob);
+        formData.append("enrolmentDate", this.enrolmentDate);
+        formData.append("memberShipID", this.memberShipID);
+        formData.append("gender", this.gender);
+        formData.append("monthlyFee", this.monthlyFee);
+        formData.append("plan", this.plan);
+        formData.append("email", this.email);
+        formData.append("address", this.address);
+        formData.append("contact1", this.contact1);
+        formData.append("contact2", this.contact2);
+        formData.append("manager", this.manager);
+        formData.append("avatar", this.avatar);
+
+        formData.append("password", this.password);
+        this.btnloading = true;
+        this.loading = true;
+        const company = this.$route.params.id;
+        const response = await axios.post(
+          `/api/user/corporate/${company}`,
+          formData,
+          {
+            headers: {
+              token: token,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        Toast.fire({
+          icon: "success",
+          title: "Success!",
+          // title: "Error",
+          text: "Customer created successfully",
+          timer: 3000,
+        });
+
+        this.btnloading = false;
+        this.loading = false;
+        this.$router.go(-1); // Redirect to other page
+        this.isSuccess = true;
+        console.log(response);
+        this.$emit("postcreated");
+      } catch (error) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          this.errorMessage = error.response.data.error;
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: this.errorMessage,
+          });
+          console.error("Error creating post:", this.errorMessage);
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        } else {
+          this.errorMessage = "An error occurred. Please try again.";
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: this.errorMessage,
+          });
+
+          console.error("Error creating post:", error.message);
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 3000);
+        }
+        this.btnloading = false;
+        this.loading = false;
+      }
+    },
+  },
+  created() {
+    const id = this.$route.params.id;
+    if (!id) {
+      window.location.reload();
+    }
+    this.getCompany();
+    this.getPlans();
+    this.getMagers();
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

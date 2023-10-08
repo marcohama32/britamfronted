@@ -21,21 +21,22 @@
             <div
               class="-intro-x text-white font-medium text-4xl leading-tight mt-10"
             >
-             
               <br />
               Sign in to your account.
             </div>
             <div
               class="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400"
             >
-              Manage all your customers
+              <!-- Manage all your customers -->
             </div>
           </div>
         </div>
         <!-- END: Login Info -->
         <!-- BEGIN: Login Form -->
         <form @submit.prevent="onLogin">
-          <div class="h-screen xl:h-auto flex py-5 xl:py-0 my-10 xl:my-0 container sm:px-10">
+          <div
+            class="h-screen xl:h-auto flex py-5 xl:py-0 my-10 xl:my-0 container sm:px-10"
+          >
             <div
               class="my-auto mx-auto xl:ml-20 bg-white dark:bg-darkmode-600 xl:bg-transparent px-5 sm:px-8 py-8 xl:p-0 rounded-md shadow-md xl:shadow-none w-full sm:w-3/4 lg:w-2/4 xl:w-auto"
             >
@@ -44,12 +45,11 @@
               >
                 Sign In
               </h2>
-              <div v-if="errors.email" class="invalid-feedback">
+              <!-- <div v-if="errors.email" class="invalid-feedback">
                 {{ errors.email[0] }}
-              </div>
+              </div> -->
               <div class="intro-x mt-2 text-slate-400 xl:hidden text-center">
-                A few more clicks to sign in to your account. Manage all your
-                e-commerce accounts in one place
+                Sign in to your account..
               </div>
               <div class="intro-x mt-8">
                 <input
@@ -84,20 +84,22 @@
                     type="checkbox"
                     class="form-check-input border mr-2"
                   />
-                  <label class="cursor-pointer select-none" for="remember-me"
+                  <!-- <label class="cursor-pointer select-none" for="remember-me"
                     >Remember me</label
-                  >
+                  > -->
                 </div>
-                <a href="#">Forgot Password?</a>
+                <router-link to="/forget-password"
+                  >Forgot Password?</router-link
+                >
               </div>
               <div class="intro-x mt-5 xl:mt-8 text-center xl:text-left">
                 <button
                   class="btn btn-primary py-3 px-4 w-full xl:w-32 xl:mr-3 align-top"
                   type="submit"
+                  :disabled="btnloading"
                 >
                   Login
                 </button>
-                
               </div>
               <div
                 class="intro-x mt-10 xl:mt-24 text-slate-600 dark:text-slate-500 text-center xl:text-left"
@@ -121,59 +123,69 @@
 </template>
 <script>
 import axios from "axios";
-
+import Cookies from "js-cookie";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import "sweetalert2/dist/sweetalert2.css";
 
 export default {
   data() {
     return {
       email: "",
       password: "",
+      btnloading: false,
       errors: {},
     };
   },
-  
+
   methods: {
-  onLogin() {
-    this.errors = {}; // Reset errors object
-    let user = {
-      email: this.email,
-      password: this.password,
-    };
+    onLogin() {
+      this.btnloading = false;
+      this.errors = {}; // Reset errors object
+      let user = {
+        email: this.email,
+        password: this.password,
+      };
 
-    axios
-      .post("/signin", user)
-      .then((res) => {
-        // If success
-        if (res.status === 200) {
-          // Set the token in localStorage
-          localStorage.setItem('token', res.data.token);
-          localStorage.setItem('role', res.data.role);
-          
-          // Emit an event to notify the successful login
-          this.$emit("loginSuccess");
-          
-          // Call the beforeRouteEnter navigation guard
-          this.$router.go('/');
-        }
-      })
-      .catch((err) => {
-        if (err.response && err.response.data && err.response.data.error) {
-          this.errors = { email: [err.response.data.error] }; // Set the errors object
-          console.log(this.errors);
-        }
-      });
+      axios
+        .post("/api/signin", user)
+        .then((res) => {
+          // If success
+          if (res.status === 200) {
+            Cookies.set("token", res.data.token, { expires: 7 }); // Store token in a cookie
+            Cookies.set("role", res.data.role, { expires: 7 }); // Store role in a cookie
+            this.btnloading = true;
+            // Emit an event to notify the successful login
+            this.$emit("loginSuccess");
+            
+            // Call the beforeRouteEnter navigation guard
+            this.$router.go("/");
+          }
+        })
+        .catch((err) => {
+          if (err.response && err.response.data && err.response.data.error) {
+            this.errors = { email: [err.response.data.error] }; // Set the errors object
+            console.log(this.errors);
+            Swal.fire({
+              icon: "warning",
+              title: "Warning!",
+              toast: true,
+              text: `${this.errors.email}`,
+              timer: 3000,
+              showConfirmButton: false,
+              position: "top-end",
+            });
+          }
+        });
+    },
   },
-},
 
-beforeRouteEnter(to, from, next) {
-  const isAuthenticated = localStorage.getItem('token');
-  if (isAuthenticated) {
-    next({ name: 'Dashboard' }); // Redirect to dashboard if already authenticated
-  } else {
-    next(); // Continue with the login page
-  }
-},
-
-
+  beforeRouteEnter(to, from, next) {
+    const isAuthenticated = Cookies.get("token");
+    if (isAuthenticated) {
+      next({ name: "Dashboard" }); // Redirect to dashboard if already authenticated
+    } else {
+      next(); // Continue with the login page
+    }
+  },
 };
 </script>

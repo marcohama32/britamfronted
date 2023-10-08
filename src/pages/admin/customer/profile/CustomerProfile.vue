@@ -1,8 +1,54 @@
 <template>
   <div>
+    <div v-if="loading" class="spinner" style="font-size: 18px"></div>
     <div class="intro-y flex items-center mt-8">
+      <div v-if="loading">
+        <div class="spinner-border text-primary" role="status">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-loader"
+          >
+            <line x1="12" x2="12" y1="2" y2="6" />
+            <line x1="12" x2="12" y1="18" y2="22" />
+            <line x1="4.93" x2="7.76" y1="4.93" y2="7.76" />
+            <line x1="16.24" x2="19.07" y1="16.24" y2="19.07" />
+            <line x1="2" x2="6" y1="12" y2="12" />
+            <line x1="18" x2="22" y1="12" y2="12" />
+            <line x1="4.93" x2="7.76" y1="19.07" y2="16.24" />
+            <line x1="16.24" x2="19.07" y1="7.76" y2="4.93" />
+          </svg>
+          <span class="sr-only">Loading...</span>
+        </div>
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+      </div>
       <h2 class="text-lg font-medium mr-auto">Customer Profile</h2>
-      <button class="btn btn-primary mt-5">Edit</button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary w-24 mr-1 mt-5"
+        @click="goBack"
+      >
+        Back
+      </button>
+      <div v-if="role === '1'">
+        <div v-if="CustomerRole === 5">
+          <router-link :to="`/updatecorporate/${this.$route.params.id}`"
+            ><button class="btn btn-secondary mt-5">Edit</button>
+          </router-link>
+        </div>
+        <div v-if="CustomerRole === 4">
+          <router-link :to="`/updatecustomer/${this.$route.params.id}`"
+            ><button class="btn btn-secondary mt-5">Edit</button>
+          </router-link>
+        </div>
+      </div>
     </div>
     <!-- BEGIN: Profile Info -->
     <div class="intro-y box px-5 pt-5 mt-5">
@@ -34,8 +80,17 @@
             >
               {{ firstName }} {{ lastName }}
             </div>
-            <div class="text-slate-500">Agente de loja</div>
-            <div class="text-slate-200 mt-1">2345ds6#fr56</div>
+            <div class="text-slate-500">{{ getRole(CustomerRole) }}</div>
+            <div class="text-slate-200 mt-1">{{ memberShipID }}</div>
+            <div class="text-slate-200 mt-1">
+              {{ formatCurrency(monthlyFee) }}
+            </div>
+            <div
+              class="lg:text-left mt-3 lg:mt-0"
+              :class="getStatusClass(status)"
+            >
+              {{ status }}
+            </div>
           </div>
         </div>
         <div
@@ -48,20 +103,80 @@
             class="flex flex-col justify-center items-center lg:items-start mt-4"
           >
             <div class="truncate sm:whitespace-normal flex items-center">
-              <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
-              joanameque@cdm.com
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-mail w-4 h-4 mr-2"
+              >
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+              {{ email }}
             </div>
             <div class="truncate sm:whitespace-normal flex items-center mt-3">
-              <i data-lucide="instagram" class="w-4 h-4 mr-2"></i>
-              848562320
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-smartphone-nfc w-4 h-4 mr-2"
+              >
+                <rect width="7" height="12" x="2" y="6" rx="1" />
+                <path d="M13 8.32a7.43 7.43 0 0 1 0 7.36" />
+                <path d="M16.46 6.21a11.76 11.76 0 0 1 0 11.58" />
+                <path d="M19.91 4.1a15.91 15.91 0 0 1 .01 15.8" />
+              </svg>
+              {{ contact1 }}
             </div>
             <div class="truncate sm:whitespace-normal flex items-center mt-3">
-              <i data-lucide="twitter" class="w-4 h-4 mr-2"></i>
-              212568
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-smartphone-nfc w-4 h-4 mr-2"
+              >
+                <rect width="7" height="12" x="2" y="6" rx="1" />
+                <path d="M13 8.32a7.43 7.43 0 0 1 0 7.36" />
+                <path d="M16.46 6.21a11.76 11.76 0 0 1 0 11.58" />
+                <path d="M19.91 4.1a15.91 15.91 0 0 1 .01 15.8" />
+              </svg>
+              {{ contact2 }}
             </div>
             <div class="truncate sm:whitespace-normal flex items-center mt-3">
-              <i data-lucide="twitter" class="w-4 h-4 mr-2"></i>
-              Aeroporto A
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-map-pin w-4 h-4 mr-2"
+              >
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {{ address }}
             </div>
           </div>
         </div>
@@ -69,32 +184,41 @@
           class="mt-6 lg:mt-0 flex-1 px-5 border-t lg:border-0 border-slate-200/60 dark:border-darkmode-400 pt-5 lg:pt-0"
         >
           <div class="font-medium text-center lg:text-left lg:mt-2">
-            Main Member
-          </div>
-          <div class="flex items-center justify-center lg:justify-start mt-2">
-            <div class="">Gender: <span class="ml-3 font-medium">W</span></div>
+            Member type: {{ relation }}
           </div>
           <div class="flex items-center justify-center lg:justify-start mt-2">
             <div class="">
-              DOB: <span class="ml-3 font-medium">22/06/1987</span>
+              Gender: <span class="ml-3 font-medium">{{ gender }}</span> || DOB:
+              <span class="ml-3 font-medium">{{ dob }}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-center lg:justify-start mt-2">
+            <div class="">
+              Enrolment Date :
+              <span class="ml-3 font-medium">{{ enrolmentDate }}</span>
             </div>
           </div>
           <div class="flex items-center justify-center lg:justify-start mt-2">
             <div class="">
-              Dependents:
-              <span class="ml-3 font-medium text-success"
-                ><router-link to="/customerdependents">3</router-link></span
+              Plan: <span class="ml-3 font-medium">{{ plan }}</span>
+            </div>
+          </div>
+          <!-- colocar v if exist -->
+          <div v-if="agentFirstName" class="flex items-center justify-center lg:justify-start mt-2">
+            <div class="">
+              Agent:
+              <span class="ml-3 font-medium"
+                >{{ agentFirstName }} {{ agentLastName }}</span
               >
             </div>
           </div>
           <div class="flex items-center justify-center lg:justify-start mt-2">
             <div class="">
-              Plan: <span class="ml-3 font-medium">Premium 2</span>
-            </div>
-          </div>
-          <div class="flex items-center justify-center lg:justify-start mt-2">
-            <div class="">
-              Balance: <span class="ml-3 font-medium">$ 44.58,841</span>
+              Manager:
+              <span class="ml-3 font-medium"
+                >{{ managerFirstName }} {{ managerLastName }}</span
+              >
             </div>
           </div>
         </div>
@@ -113,7 +237,10 @@
 
           <!-- END: Latest Uploads -->
           <!-- BEGIN: Latest Tasks -->
-          <div class="intro-y box col-span-12 lg:col-span-6">
+          <div
+            v-if="role === 'a'"
+            class="intro-y box col-span-12 lg:col-span-6"
+          >
             <div
               class="flex items-center px-5 py-5 sm:py-0 border-b border-slate-200/60 dark:border-darkmode-400"
             >
@@ -189,7 +316,10 @@
           </div>
           <!-- END: Latest Tasks -->
           <!-- BEGIN: Work In Progress -->
-          <div class="intro-y box col-span-12 lg:col-span-6">
+          <div
+            v-if="CustomerRole === 4 || CustomerRole === 5"
+            class="intro-y box col-span-12 lg:col-span-6"
+          >
             <div
               class="flex items-center px-5 py-5 sm:py-0 border-b border-slate-200/60 dark:border-darkmode-400"
             >
@@ -218,74 +348,63 @@
                   role="tabpanel"
                   aria-labelledby="work-in-progress-new-tab"
                 >
-                  <div class="intro-y">
-                    <div class="box px-4 py-4 mb-3 flex items-center zoom-in">
-                      <div
-                        class="w-10 h-10 flex-none image-fit rounded-md overflow-hidden"
-                      >
-                        <img
-                          alt="Midone - HTML Admin Template"
-                          src="../../../../dist/images/profile-15.jpg"
-                        />
-                      </div>
-                      <div class="ml-4 mr-auto">
-                        <div class="font-medium">Piorino Mequicene</div>
-                        <div class="text-slate-500 text-xs mt-0.5">
-                          13 October 2023
+                  <div v-if="myMembers.length > 0" class="intro-y">
+                    <div
+                      class="intro-y"
+                      v-for="member in myMembers"
+                      :key="member._id"
+                    >
+                      <router-link :to="`/dependentprofile/${member._id}`">
+                        <div
+                          class="box px-4 py-4 mb-3 flex items-center zoom-in"
+                        >
+                          <div
+                            class="w-10 h-10 flex-none image-fit rounded-md overflow-hidden"
+                          >
+                            <img
+                              v-if="member.avatar"
+                              class="tooltip rounded-full"
+                              :title="
+                                member.avatarUploadDate
+                                  ? 'Uploaded at ' + member.avatarUploadDate
+                                  : 'Avatar Image'
+                              "
+                              alt="partner logo"
+                              :src="`${axios.defaults.baseURL}/${member.avatar}`"
+                              @error="handleAvatarError"
+                              @load="handleAvatarLoad"
+                            />
+                            <img
+                              v-else
+                              src="../../../../dist/images/logow.png"
+                              alt="profilecustomer"
+                              class="rounded-full"
+                            />
+                          </div>
+                          <div class="ml-4 mr-auto">
+                            <div class="font-medium">
+                              {{ member.firstName }} {{ member.lastName }}
+                            </div>
+
+                            <div class="text-slate-500 text-xs mt-0.5">
+                              {{ member.relation }}
+                            </div>
+                            <div class="text-slate-500 text-xs mt-0.5">
+                              {{ this.formatDate(member.enrolmentDate) }}
+                            </div>
+                          </div>
+                          <div
+                            class="lg:text-left mt-3 lg:mt-0"
+                            :class="getStatusClass(member.status)"
+                          >
+                            {{ member.status }}
+                          </div>
                         </div>
-                      </div>
-                      <div
-                        class="py-1 px-2 rounded-full text-xs bg-dark text-black cursor-pointer font-medium"
-                      >
-                        $ 250,145
-                      </div>
+                      </router-link>
                     </div>
                   </div>
-                  <div class="intro-y">
-                    <div class="box px-4 py-4 mb-3 flex items-center zoom-in">
-                      <div
-                        class="w-10 h-10 flex-none image-fit rounded-md overflow-hidden"
-                      >
-                        <img
-                          alt="Midone - HTML Admin Template"
-                          src="../../../../dist/images/profile-14.jpg"
-                        />
-                      </div>
-                      <div class="ml-4 mr-auto">
-                        <div class="font-medium">Joao Baloi</div>
-                        <div class="text-slate-500 text-xs mt-0.5">
-                          13 October 2021
-                        </div>
-                      </div>
-                      <div
-                        class="py-1 px-2 rounded-full text-xs bg-dark text-black cursor-pointer font-medium"
-                      >
-                        $55,05
-                      </div>
-                    </div>
-                  </div>
-                  <div class="intro-y">
-                    <div class="box px-4 py-4 mb-3 flex items-center zoom-in">
-                      <div
-                        class="w-10 h-10 flex-none image-fit rounded-md overflow-hidden"
-                      >
-                        <img
-                          alt="Midone - HTML Admin Template"
-                          src="../../../../dist/images/profile-12.jpg"
-                        />
-                      </div>
-                      <div class="ml-4 mr-auto">
-                        <div class="font-medium">Joshua Mequicene</div>
-                        <div class="text-slate-500 text-xs mt-0.5">
-                          13 October 2021
-                        </div>
-                      </div>
-                      <div
-                        class="py-1 px-2 rounded-full text-xs bg-dark text-black cursor-pointer font-medium"
-                      >
-                        $ 137,145
-                      </div>
-                    </div>
+                  <div v-else class="text-center text-gray-600 mt-4">
+                    Dependents no found.
                   </div>
                 </div>
               </div>
@@ -294,7 +413,7 @@
           <!-- END: Work In Progress -->
           <!-- BEGIN: Latest Uploads -->
           <!-- BEGIN: Latest Uploads -->
-          <div class="intro-y box col-span-12 lg:col-span-12">
+          <div class="intro-y box col-span-6 lg:col-span-12">
             <div
               class="flex items-center px-5 py-5 sm:py-3 border-b border-slate-200/60 dark:border-darkmode-400"
             >
@@ -313,6 +432,7 @@
                 </a>
               </div>
               <button
+                v-if="role === '1' || role === '2'"
                 data-tw-toggle="modal"
                 data-tw-target="#new-order-modal"
                 class="btn btn-outline-secondary hidden sm:flex"
@@ -347,7 +467,11 @@
                   </div>
                 </div>
                 <!-- delete icon -->
-                <div class="dropdown ml-auto mouser" style="cursor: pointer">
+                <div
+                  v-if="role === 1 || role === 2 || role === 3"
+                  class="dropdown ml-auto mouser"
+                  style="cursor: pointer"
+                >
                   <a class="flex items-center text-danger" href="javascript:;">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -383,8 +507,6 @@
           </div>
 
           <!-- END: Latest Uploads -->
-
-          <!-- END: Latest Uploads -->
         </div>
       </div>
     </div>
@@ -395,7 +517,9 @@
         <div class="modal-content">
           <!-- Modal header -->
           <div class="modal-header">
-            <h2 class="font-medium text-base mr-auto">Upload file</h2>
+            <h2 class="font-medium text-base mr-auto">
+              Upload file <span>.jpeg .png .pdf</span>
+            </h2>
           </div>
           <div
             v-if="loading"
@@ -442,32 +566,43 @@
   </div>
 </template>
 <script>
+import Cookies from "js-cookie";
 import axios from "axios";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import "sweetalert2/dist/sweetalert2.css";
 export default {
   data() {
     return {
-      plan: null,
+      plan: "",
       errorMessage: "",
       firstName: "",
       lastName: "",
       avatar: "",
       multipleFiles: [],
       files: [],
+      myMembers: [],
       loading: false,
-
+      role: "",
+      CustomerRole: "",
       address: "",
       balancePlan: "",
       contact1: "",
       contact2: "",
+      company: "",
       dob: "",
       email: "",
       gender: "",
+      memberShipID: "",
       idNumber: "",
       idType: "",
       monthlyFee: "",
       relation: "",
+      manager: "",
+      managerFirstName: "",
+      managerLastName: "",
+      agentFirstName: "",
+      agentLastName: "",
+      id: "",
       enrolmentDate: "",
       status: "",
     };
@@ -478,6 +613,7 @@ export default {
     },
   },
   created() {
+    this.role = Cookies.get("role");
     this.getProfile();
   },
   computed: {
@@ -487,34 +623,98 @@ export default {
     // },
   },
   methods: {
+    formatCurrency(value) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      return formatter.format(value);
+    },
+    goBack() {
+      this.$router.go(-1);
+    },
+    formatDate(dateString) {
+      const date = new Date(dateString); // Create a Date object from the ISO 8601 date string
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is zero-based, so add 1 and pad with '0' if needed
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`; // Return the formatted date as a string
+    },
+    getStatusClass(status) {
+      if (status === "Active") {
+        return "text-success";
+      } else if (status === "Inactive") {
+        return "text-danger";
+      } else {
+        return ""; // Default class if no match
+      }
+    },
+
+    getRole(CustomerRole) {
+      if (CustomerRole === 1) {
+        return "Admin";
+      } else if (CustomerRole === 2) {
+        return "Line Manager";
+      } else if (CustomerRole === 3) {
+        return "Agent";
+      }
+      {
+        return ""; // Default class if no match
+      }
+    },
     getProfile() {
+      this.loading = true;
       const id = this.$route.params.id;
-      const token = localStorage.getItem("token");
+      const token = Cookies.get("token");
+
       axios
-        .get(`/user/${id}`, {
+        .get(`/api/userprofile/${id}`, {
           headers: {
             token: token,
           },
         })
         .then((response) => {
-          console.log(response.data);
+          this.loading = false;
           // Update the component's data with the received response
-          this.plan = response.data.plan;
+          // console.log("Plano", response.data.user.plan[0].planName);
+          this.myMembers = response.data.user.myMembers;
+
+          this.manager = response.data.user.manager;
+          this.managerFirstName = this.manager.firstName;
+          this.managerLastName = this.manager.lastName;
+          
+          if(response.data.user.agent){
+            this.agentFirstName = this.agent.firstName;
+          this.agentLastName = this.agent.lastName;
+          }
+         
+          this.company = response.data.user.company;
+          this.plan = response.data.user.plan[0].planName;
           this.firstName = response.data.user.firstName;
           this.lastName = response.data.user.lastName;
-          this.address= response.data.user.address;
-          this.balancePlan= response.data.user.balancePlan;
-          this.contact1= response.data.user.contact1;
-          this.contact2= response.data.user.contact2;
-          this.dob = response.data.user.dob;
-          this.email= response.data.user.email;
-          this.gender= response.data.user.gender;
-          this.idNumber= response.data.user.idNumber;
-          this.idType= response.data.user.idType;
-          this.monthlyFee= response.data.user.monthlyFee;
-          this.relation= response.data.user.relation;
-          this.status= response.data.user.status;
-          this.enrolmentDate = response.data.user.enrolmentDate
+          this.address = response.data.user.address;
+          this.balancePlan = response.data.user.balancePlan;
+          this.contact1 = response.data.user.contact1;
+          this.contact2 = response.data.user.contact2;
+          this.memberShipID = response.data.user.memberShipID;
+          // this.dob = response.data.user.dob;
+
+          this.dob = this.formatDate(response.data.user.dob);
+          this.enrolmentDate = this.formatDate(
+            response.data.user.enrolmentDate
+          );
+
+          this.email = response.data.user.email;
+          this.gender = response.data.user.gender;
+          this.idNumber = response.data.user.idNumber;
+          this.idType = response.data.user.idType;
+          this.monthlyFee = response.data.user.monthlyFee;
+          this.relation = response.data.user.relation;
+          this.status = response.data.user.status;
+          // this.enrolmentDate = response.data.user.enrolmentDate;
+          this.CustomerRole = response.data.user.role;
+
           if (response.data.user.multipleFiles) {
             this.multipleFiles = response.data.user.multipleFiles.split(",");
           } else {
@@ -538,6 +738,44 @@ export default {
 
       // Filter out empty files
       this.files = filesArray.filter((file) => file.size > 0);
+
+      // Validate file types
+      const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+      const invalidFiles = this.files.filter(
+        (file) => !allowedTypes.includes(file.type)
+      );
+      if (invalidFiles.length > 0) {
+        // Show Toast for invalid file types
+        const invalidFileNames = invalidFiles
+          .map((file) => file.name)
+          .join(", ");
+        this.showToast("error", `Invalid file type: ${invalidFileNames}`);
+        // Clear the file input
+        this.$refs.fileInput.value = "";
+        this.$refs.fileInput.files = null;
+        this.$refs.fileInput.dispatchEvent(new Event("change"));
+        // Stop further execution
+        return;
+      }
+    },
+
+    showToast(icon, text) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+
+      Toast.fire({
+        icon: icon,
+        text: text,
+      });
     },
 
     uploadFiles() {
@@ -553,7 +791,7 @@ export default {
         },
       });
       const id = this.$route.params.id;
-      const token = localStorage.getItem("token");
+      const token = Cookies.get("token");
 
       const formData = new FormData();
 
@@ -578,14 +816,13 @@ export default {
       this.loading = true;
 
       axios
-        .put(`/user/uploadmultiplefiles/${id}`, formData, {
+        .put(`/api/user/uploadmultiplefiles/${id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             token: token,
           },
         })
         .then((response) => {
-          console.log(response.data);
           if (response.data.success) {
             // Close the modal
             this.$refs.fileInput.value = ""; // Clear the file input
@@ -611,6 +848,7 @@ export default {
         })
         .catch((error) => {
           console.error("Error uploading file:", error);
+
           // Hide loading indicator
           this.loading = false;
         });
@@ -631,7 +869,7 @@ export default {
         confirmButtonText: "Yes, delete it!",
       }).then((result) => {
         if (result.isConfirmed) {
-          const token = localStorage.getItem("token");
+          const token = Cookies.get("token");
           axios
             .delete("admin/file/delete", {
               headers: {
@@ -663,7 +901,7 @@ export default {
     },
 
     getFilePath(file) {
-      return `http://localhost:8000/${file}`;
+      return `${axios.defaults.baseURL}/${file}`;
     },
     getFileName(file) {
       const fileName = file.split("-")[2];
@@ -680,13 +918,27 @@ export default {
     getAvatarUrl() {
       if (this.avatar) {
         // Assuming the base URL is "http://localhost:8000"
-        return `http://localhost:8000/${this.avatar.replace("\\", "/")}`;
+        return `${axios.defaults.baseURL}/${this.avatar.replace("\\", "/")}`;
       }
       // Return a default image URL if the avatar is not available
       return "../../../../dist/images/logow.png";
     },
-   
   },
 };
 </script>
-<style></style>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

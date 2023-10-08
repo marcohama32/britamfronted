@@ -1,7 +1,147 @@
 <template>
   <div>
-    <h2 class="intro-y text-lg font-medium mt-10">Transactions List</h2>
+    <h2 class="intro-y text-lg font-medium mt-5">All Transactions</h2>
     <div class="grid grid-cols-12 gap-6 mt-5">
+      <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
+        <router-link to="/transactionsinprogress">
+          <div class="report-box zoom-in">
+            <div class="box p-5">
+              <div v-if="inprogress" class="flex text-xl">
+                {{ formatCurrency(inprogress) }}
+              </div>
+              <!-- class="w-8 h-8"> -->
+              <div class="text-3xl font-medium leading-8 mt-6">
+                <label v-if="inprogressCount">{{
+                  formatNumber(inprogressCount)
+                }}</label
+                ><label v-else>
+                  <div class="spinner" style="font-size: 18px"></div>
+                </label>
+              </div>
+              <div class="text-base text-slate-500 mt-1">In progress</div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+      <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
+        <router-link to="/transactionspending">
+          <div class="report-box zoom-in">
+            <div class="box p-5">
+              <div v-if="pending" class="flex text-xl">
+                {{ formatCurrency(pending) }}
+              </div>
+              <div class="text-3xl font-medium leading-8 mt-6">
+                <label v-if="pending">{{ formatNumber(pendingCount) }}</label
+                ><label v-else>
+                  <div class="spinner" style="font-size: 18px"></div>
+                </label>
+              </div>
+              <div class="text-base text-slate-500 mt-1">
+                Pending for approval
+              </div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+      <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
+        <router-link to="/transactionsaproved">
+          <div class="report-box zoom-in">
+            <div class="box p-5">
+              <div v-if="aproved" class="flex text-xl">
+                {{ formatCurrency(aproved) }}
+              </div>
+              <div class="text-3xl font-medium leading-8 mt-6">
+                <label v-if="revoked">{{ formatNumber(aprovedCount) }}</label
+                ><label v-else>
+                  <div class="spinner" style="font-size: 18px"></div>
+                </label>
+              </div>
+              <div class="text-base text-slate-500 mt-1">Aproved</div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+      <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
+        <router-link to="/transactionscompleted">
+          <div class="report-box zoom-in">
+            <div class="box p-5">
+              <div v-if="completed" class="flex text-xl">
+                {{ formatCurrency(completed) }}
+              </div>
+              <div class="text-3xl font-medium leading-8 mt-6">
+                <label v-if="completed">{{
+                  formatNumber(completedCount)
+                }}</label
+                ><label v-else>
+                  <div class="spinner" style="font-size: 18px"></div>
+                </label>
+              </div>
+              <div class="text-base text-slate-500 mt-1">Completed</div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+      <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
+        <router-link to="/transactionscanceled">
+          <div class="report-box zoom-in">
+            <div class="box p-5">
+              <div v-if="completed" class="flex text-xl">
+                {{ formatCurrency(canceled) }}
+              </div>
+              <div class="text-3xl font-medium leading-8 mt-6">
+                <label v-if="completed">{{ formatNumber(canceledCount) }}</label
+                ><label v-else>
+                  <div class="spinner" style="font-size: 18px"></div>
+                </label>
+              </div>
+              <div class="text-base text-slate-500 mt-1">Canceled</div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+      <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
+        <router-link to="/transactionsrevoked">
+          <div class="report-box zoom-in">
+            <div class="box p-5">
+              <div v-if="revoked" class="flex text-xl">
+                {{ formatCurrency(revoked) }}
+              </div>
+              <div class="text-3xl font-medium leading-8 mt-6">
+                <label v-if="revoked">{{ formatNumber(revokedCount) }}</label
+                ><label v-else>
+                  <div class="spinner" style="font-size: 18px"></div>
+                </label>
+              </div>
+              <div class="text-base text-slate-500 mt-1">Revoked</div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+      <div class="col-span-12 sm:col-span-6 xl:col-span-3 intro-y">
+        <router-link to="/transactionsrevoked">
+          <div class="report-box zoom-in">
+            <div class="box p-5">
+              <div v-if="averageApprovalTime" class="flex text-xl">
+                <!-- {{ averageApprovalTime }} -->
+              </div>
+              <div class="text-2xl font-medium leading-8 mt-6">
+                <label v-if="revoked">{{ formattedAverageApprovalTime }}</label
+                ><label v-else>
+                  <div class="spinner" style="font-size: 18px"></div>
+                </label>
+              </div>
+              <div class="text-base text-slate-500 mt-1">
+                Average Approval Time
+              </div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+    </div>
+    <label v-if="loading" class="shadow-md">
+      <div class="spinner" style="font-size: 18px"></div>
+    </label>
+    <div class="grid grid-cols-12 gap-6 mt-8">
       <div
         class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2"
       >
@@ -10,115 +150,186 @@
             <input
               type="text"
               class="form-control w-48 box pr-10"
-              placeholder="Search by invoice..."
+              placeholder="Search..."
+              v-model="searchTerm"
+              @input="applyFilter"
             />
             <i
               class="w-4 h-4 absolute my-auto inset-y-0 mr-3 right-0"
               data-lucide="search"
             ></i>
           </div>
-          <select class="form-select box ml-2">
-            <option>Status</option>
-            <option>Waiting Payment</option>
-            <option>Confirmed</option>
-            <option>Packing</option>
-            <option>Delivered</option>
-            <option>Completed</option>
-          </select>
         </div>
+        <div class="ml-1">
+          <!-- <label class="ml-5" for="startDate">Start Date:</label> -->
+          <vue-flatpickr
+            class="box pr-10 ml-2 custom-date-input"
+            id="startDate"
+            v-model="startDate"
+            :config="datePickerConfig"
+            placeholder="Select start Date"
+          ></vue-flatpickr>
+
+          <!-- <label class="ml-5" for="endDate">End Date:</label> -->
+          <vue-flatpickr
+            class="box pr-10 ml-2 custom-date-input"
+            id="endDate"
+            v-model="endDate"
+            :config="datePickerConfig"
+            placeholder="Select last Date"
+          ></vue-flatpickr>
+
+          <button
+            class="btn btn-outline-primary inline-block ml-5"
+            @click="applyFilterDate"
+          >
+            Search by date
+          </button>
+          <button
+            class="btn btn-outline-primary inline-block ml-5"
+            @click="refresh"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-3 h-3 lucide lucide-refresh-ccw"
+            >
+              <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+              <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+              <path d="M16 16h5v5" />
+            </svg>
+          </button>
+        </div>
+
         <div class="hidden xl:block mx-auto text-slate-500">
-          Showing 1 to 10 of 150 entries
+          Showing {{ firstEntryIndex }} to {{ lastEntryIndex }} of
+          {{ count }} entries
         </div>
         <div class="w-full xl:w-auto flex items-center mt-3 xl:mt-0">
-          <button class="btn btn-primary shadow-md mr-2" @click="exportToExcel">
+          <!-- <button class="btn btn-primary shadow-md mr-2" @click="exportToExcel">
             <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Export to Excel
-          </button>
-          <button class="btn btn-primary shadow-md mr-2" @click="exportToPDF">
-            <i data-lucide="file-text" class="w-4 h-4 mr-2"></i> Export to PDF
-          </button>
-          <div class="dropdown">
-            <button
-              class="dropdown-toggle btn px-2 box"
-              aria-expanded="false"
-              data-tw-toggle="dropdown"
-            >
-              <span class="w-5 h-5 flex items-center justify-center">
-                <i class="w-4 h-4" data-lucide="plus"></i>
-              </span>
-            </button>
-            <div class="dropdown-menu w-40">
-              <ul class="dropdown-content">
-                <li>
-                  <a href="#" class="dropdown-item">
-                    <i data-lucide="arrow-left-right" class="w-4 h-4 mr-2"></i>
-                    Change Status
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="dropdown-item">
-                    <i data-lucide="bookmark" class="w-4 h-4 mr-2"></i> Bookmark
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
+          </button> -->
         </div>
       </div>
+
       <!-- BEGIN: Data List -->
+
       <div class="intro-y col-span-12 overflow-auto 2xl:overflow-visible">
         <table class="table table-report -mt-2">
           <thead>
             <tr>
-              
               <th class="whitespace-nowrap">INVOICE</th>
-              <th class="whitespace-nowrap">BUYER NAME</th>
-              <th class="text-center whitespace-nowrap">STATUS</th>
-              <th class="whitespace-nowrap">PAYMENT</th>
-              <th class="text-right whitespace-nowrap">
-                <div class="pr-16">TOTAL TRANSACTION</div>
+              <th class="whitespace-nowrap">Company</th>
+              <th class="whitespace-nowrap">Partner</th>
+              <th class="whitespace-nowrap">Customer</th>
+              <th class="text-center whitespace-nowrap">Amount</th>
+              <th class="whitespace-nowrap">Service</th>
+              <th class="twhitespace-nowrap">
+                <div class="">Created At</div>
               </th>
+              <th class="twhitespace-nowrap">
+                <div class="">Updated At</div>
+              </th>
+              <th class="text-right whitespace-nowrap">
+                <div class="pr-16">Status</div>
+              </th>
+
               <th class="text-center whitespace-nowrap">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="intro-x">
-             
+            <tr
+              v-for="transaction in transactions"
+              :key="transaction._id"
+              class="intro-x"
+            >
               <td class="w-40 !py-4">
-                <a
-                  href="#"
-                  class="underline decoration-dotted whitespace-nowrap"
-                  >#INV-36807556</a
-                >
+                <a class="decoration-dotted whitespace-nowrap">{{
+                  transaction.invoiceNumber
+                }}</a>
               </td>
-              <td class="w-40">
-                <a href="#" class="font-medium whitespace-nowrap"
-                  >Angelina Jolie</a
+              <td class="w-40 !py-4">
+                <div
+                  v-if="
+                    transaction.customerId &&
+                    transaction.customerId.company !== undefined
+                  "
+                  class="decoration-dotted whitespace-nowrap"
                 >
-                <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">
-                  California, LA
+                  {{ transaction.customerId.company.companyName }}
+                </div>
+                <div v-else class="decoration-dotted whitespace-nowrap">
+                  Individual
                 </div>
               </td>
+              <td class="w-40 !py-4">
+                <a class="decoration-dotted whitespace-nowrap">{{
+                  transaction.user.partnerUser.partnerName
+                }}</a>
+              </td>
+              <td class="w-40">
+                <a class="font-medium whitespace-nowrap"
+                  >{{ transaction.customerId.firstName }}
+                  {{ transaction.customerId.lastName }}
+                </a>
+              </td>
               <td class="text-center">
+                <!-- outra abordagem que poderei usar se esta tiver problemas e ver se transacao status igual a revoked mostrar revokedAmount caso contrario mostrar amount -->
                 <div
-                  class="flex items-center justify-center whitespace-nowrap text-pending"
+                  v-if="
+                    transaction.transactionStatus !== 'Revoked' &&
+                    transaction.transactionStatus !== 'Canceled'
+                  "
+                  class="flex items-center justify-center whitespace-nowrap"
                 >
-                  Pending Payment
+                  {{ formatCurrency(transaction.amount) }}
+                </div>
+                <div
+                  v-else
+                  class="flex items-center justify-center whitespace-nowrap"
+                >
+                  {{ formatCurrency(transaction.revokedAmount) }}
                 </div>
               </td>
               <td>
-                <div class="whitespace-nowrap">Checking payments</div>
-                <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">
-                  30 March, 11:00
+                <div class="whitespace-nowrap">
+                  {{ transaction.serviceIds[0].serviceName }}
                 </div>
               </td>
-              <td class="w-40 text-right">
-                <div class="pr-16">$36,000,00</div>
+              <td>
+                <div class="whitespace-nowrap">
+                  {{ formatDateWithTime(transaction.createdAt) }}
+                </div>
+              </td>
+              <td>
+                <div class="whitespace-nowrap">
+                  {{ formatDateWithTime(transaction.updatedAt) }}
+                </div>
+              </td>
+              <td class="w-40 !py-4">
+                <div
+                  class="whitespace-nowrap"
+                  :class="getStatusClass(transaction.transactionStatus)"
+                >
+                  {{ transaction.transactionStatus }}
+                </div>
               </td>
               <td class="table-report__action">
                 <div class="flex justify-center items-center">
                   <a
-                    class="flex items-center text-primary whitespace-nowrap mr-5"
                     href="javascript:;"
+                    class="flex items-center text-primary whitespace-nowrap mr-5"
+                    @click="openTransactionFilesModal(transaction)"
+                    data-tw-toggle="modal"
+                    data-tw-target="#files-modal"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -130,20 +341,20 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="w-4 h-4 mr-1 lucide lucide-check-square"
+                      class="w-4 h-4 mr-1 lucide lucide-file-symlink"
                     >
-                      <polyline points="9 11 12 14 22 4" />
                       <path
-                        d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                        d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v7"
                       />
+                      <polyline points="14 2 14 8 20 8" />
+                      <path d="m10 18 3-3-3-3" />
+                      <path d="M4 18v-1a2 2 0 0 1 2-2h6" />
                     </svg>
-                    View Details
+                    Files
                   </a>
                   <a
-                    class="flex items-center text-primary whitespace-nowrap"
-                    href="javascript:;"
-                    data-tw-toggle="modal"
-                    data-tw-target="#delete-confirmation-modal"
+                    v-if="transaction.transactionStatus === 'Pending'"
+                    class="flex items-center text-primary whitespace-nowrap mr-5"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -155,70 +366,77 @@
                       stroke-width="2"
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      class="w-4 h-4 mr-1 lucide lucide-arrow-left-right"
+                      class="w-4 h-4 mr-1 lucide lucide-pencil"
                     >
-                      <path d="M8 3 4 7l4 4" />
-                      <path d="M4 7h16" />
-                      <path d="m16 21 4-4-4-4" />
-                      <path d="M20 17H4" />
+                      <path
+                        d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+                      />
+                      <path d="m15 5 4 4" />
+                    </svg>
+                    <router-link
+                      :to="`/customertransactiondetail/${transaction._id}`"
+                    >
+                      Edit
+                    </router-link>
+                  </a>
+                  <a
+                    v-if="transaction.transactionStatus === 'Completed'"
+                    class="flex items-center text-primary whitespace-nowrap mr-5"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="w-4 h-4 mr-1 lucide lucide-file-symlink"
+                    >
+                      <path
+                        d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v7"
+                      />
+                      <polyline points="14 2 14 8 20 8" />
+                      <path d="m10 18 3-3-3-3" />
+                      <path d="M4 18v-1a2 2 0 0 1 2-2h6" />
                     </svg>
 
-                    Change Status
+                    <router-link :to="`/transactioninvoice/${transaction._id}`"
+                      >Invoice</router-link
+                    >
                   </a>
-                </div>
-              </td>
-            </tr>
-            <tr class="intro-x">
-              
-              <td class="w-40 !py-4">
-                <a
-                  href="#"
-                  class="underline decoration-dotted whitespace-nowrap"
-                  >#INV-72807556</a
-                >
-              </td>
-              <td class="w-40">
-                <a href="#" class="font-medium whitespace-nowrap"
-                  >Sylvester Stallone</a
-                >
-                <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">
-                  Ohio, Ohio
-                </div>
-              </td>
-              <td class="text-center">
-                <div
-                  class="flex items-center justify-center whitespace-nowrap text-success"
-                >
-                  <i data-lucide="check-square" class="w-4 h-4 mr-2"></i>
-                  Completed
-                </div>
-              </td>
-              <td>
-                <div class="whitespace-nowrap">Direct bank transfer</div>
-                <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">
-                  25 March, 12:55
-                </div>
-              </td>
-              <td class="w-40 text-right">
-                <div class="pr-16">$72,000,00</div>
-              </td>
-              <td class="table-report__action">
-                <div class="flex justify-center items-center">
                   <a
+                    v-if="
+                      transaction.transactionStatus !== 'Completed' &&
+                      transaction.transactionStatus !== 'Canceled' &&
+                      transaction.transactionStatus !== 'Revoked'
+                    "
                     class="flex items-center text-primary whitespace-nowrap mr-5"
-                    href="javascript:;"
                   >
-                    <i data-lucide="check-square" class="w-4 h-4 mr-1"></i> View
-                    Details
-                  </a>
-                  <a
-                    class="flex items-center text-primary whitespace-nowrap"
-                    href="javascript:;"
-                    data-tw-toggle="modal"
-                    data-tw-target="#delete-confirmation-modal"
-                  >
-                    <i data-lucide="arrow-left-right" class="w-4 h-4 mr-1"></i>
-                    Change Status
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="w-4 h-4 mr-1 lucide lucide-trash-2"
+                    >
+                      <path d="M3 6h18" />
+                      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                      <line x1="10" x2="10" y1="11" y2="17" />
+                      <line x1="14" x2="14" y1="11" y2="17" />
+                    </svg>
+
+                    <router-link :to="`/canceltransaction/${transaction._id}`"
+                      >Cancel</router-link
+                    >
                   </a>
                 </div>
               </td>
@@ -227,6 +445,14 @@
         </table>
       </div>
       <!-- END: Data List -->
+      <div
+        v-if="loading"
+        class="col-span-6 sm:col-span-3 xl:col-span-2 flex flex-col justify-end items-center"
+      >
+        <i data-loading-icon="puff" class="w-8 h-8"></i>
+        <div class="text-center text-xs mt-2">Loading...</div>
+      </div>
+
       <!-- BEGIN: Pagination -->
       <div
         class="intro-y col-span-12 flex flex-wrap sm:flex-row sm:flex-nowrap items-center"
@@ -234,26 +460,7 @@
         <nav class="w-full sm:w-auto sm:mr-auto">
           <ul class="pagination">
             <li class="page-item">
-              <a class="page-link" href="#">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="w-4 h-4 lucide lucide-chevrons-left"
-                >
-                  <path d="m11 17-5-5 5-5" />
-                  <path d="m18 17-5-5 5-5" />
-                </svg>
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">
+              <a class="page-link" @click="previousPage">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -271,15 +478,18 @@
                 </svg>
               </a>
             </li>
-            <li class="page-item"><a class="page-link" href="#">...</a></li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item active">
-              <a class="page-link" href="#">2</a>
+
+            <li
+              class="page-item"
+              v-for="page in totalPages"
+              :key="page"
+              :class="{ active: isActivePage(page) }"
+            >
+              <a class="page-link" @click="goToPage(page)">{{ page }}</a>
             </li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item"><a class="page-link" href="#">...</a></li>
+
             <li class="page-item">
-              <a class="page-link" href="#">
+              <a class="page-link" @click="nextPage">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -290,50 +500,33 @@
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="w-4 h-4 lucide lucide-chevron-right"
+                  class="w-4 h-4 lucide lucide lucide-chevrons-right"
                 >
-                  <path d="m11 17-5-5 5-5" />
-                  <path d="m18 17-5-5 5-5" />
-                </svg>
-              </a>
-            </li>
-            <li class="page-item">
-              <a class="page-link" href="#">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="w-4 h-4 lucide lucide-chevrons-right"
-                >
-                  <path d="m11 17-5-5 5-5" />
-                  <path d="m18 17-5-5 5-5" />
+                  <path d="m6 17 5-5-5-5" />
+                  <path d="m13 17 5-5-5-5" />
                 </svg>
               </a>
             </li>
           </ul>
         </nav>
-        <select class="w-20 form-select box mt-3 sm:mt-0">
+        <select
+          class="w-20 form-select box mt-3 sm:mt-0"
+          v-model="pageSize"
+          @change="changePageSize"
+        >
           <option>10</option>
           <option>25</option>
           <option>35</option>
           <option>50</option>
+          <option>100</option>
+          <option>500</option>
+          <option>1000</option>
         </select>
       </div>
       <!-- END: Pagination -->
     </div>
-    <!-- BEGIN: Delete Confirmation Modal -->
-    <div
-      id="delete-confirmation-modal"
-      class="modal"
-      tabindex="-1"
-      aria-hidden="true"
-    >
+    <!-- BEGIN: transaction Modal -->
+    <div id="files-modal" class="modal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body p-0">
@@ -342,11 +535,16 @@
                 data-lucide="x-circle"
                 class="w-16 h-16 text-danger mx-auto mt-3"
               ></i>
-              <div class="text-3xl mt-5">Are you sure?</div>
+              <div class="text-3xl mt-5">Transaction files</div>
               <div class="text-slate-500 mt-2">
-                Do you really want to delete these records?
-                <br />
-                This process cannot be undone.
+                <ul>
+                  <li v-for="(file, index) in transactionFiles" :key="file">
+                    {{ index + 1 }}.
+                    <a :href="getFilePath(file)" target="_blank">{{
+                      shortenFileName(file)
+                    }}</a>
+                  </li>
+                </ul>
               </div>
             </div>
             <div class="px-5 pb-8 text-center">
@@ -357,50 +555,398 @@
               >
                 Cancel
               </button>
-              <button type="button" class="btn btn-danger w-24">Delete</button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- END: Delete Confirmation Modal -->
+    <!-- END: transaction Modal -->
 
     <!-- END: Content -->
   </div>
 </template>
 <script>
 import { utils, writeFile } from "xlsx";
-
-import html2pdf from 'html2pdf.js';
+import axios from "axios";
+import html2pdf from "html2pdf.js";
+import Cookies from "js-cookie";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import "sweetalert2/dist/sweetalert2.css";
 
 export default {
   data() {
-    return {};
+    return {
+      transactions: [],
+      transactionFiles: [], // Initialize as an empty array
+      currentPage: 1,
+      totalPages: 1,
+      itemsPerPage: 10,
+      firtName: "",
+      lastName: "",
+      idType: "",
+      loading: false,
+      pageSize: 10,
+      count: 0,
+      firstEntryIndex: 0,
+      lastEntryIndex: 0,
+      searchTerm: "",
+      inprogress: "",
+      revoked: "",
+      aproved: "",
+      pending: "",
+      completed: "",
+      inprogressCount: "",
+      revokedCount: "",
+      aprovedCount: "",
+      pendingCount: "",
+      completedCount: "",
+      canceled: "",
+      canceledCount: "",
+      averageApprovalTime: "",
+      startDate: "",
+      endDate: "",
+      selectedDate: null,
+    };
+  },
+  computed: {
+    datePickerConfig() {
+      return {
+        // mode: "range", // Enables range selection mode
+        dateFormat: "Y-m-d", // Customize the date format
+      };
+    },
+    formattedAverageApprovalTime() {
+      const totalMilliseconds = this.averageApprovalTime;
+      const totalSeconds = Math.floor((totalMilliseconds / 1000) % 60);
+      const totalMinutes = Math.floor((totalMilliseconds / (1000 * 60)) % 60);
+      const totalHours = Math.floor(
+        (totalMilliseconds / (1000 * 60 * 60)) % 24
+      );
+      const totalDays = Math.floor(totalMilliseconds / (1000 * 60 * 60 * 24));
+
+      let formattedTime = "";
+      if (totalDays > 0) {
+        formattedTime += `${totalDays} days `;
+      }
+      if (totalHours > 0) {
+        formattedTime += `${totalHours} hours `;
+      }
+      if (totalMinutes > 0) {
+        formattedTime += `${totalMinutes} minutes `;
+      }
+      if (totalSeconds > 0 || formattedTime === "") {
+        formattedTime += `${totalSeconds} seconds`;
+      }
+
+      return formattedTime;
+    },
+    hasPreviousPage() {
+      return this.currentPage > 1;
+    },
+    hasNextPage() {
+      return this.currentPage < this.totalPages;
+    },
+  },
+  watch: {
+    currentPage: "fetchData",
+    pageSize: "fetchData",
+    searchTerm: "fetchData",
   },
   methods: {
+    refresh() {
+      (this.startDate = null),
+        (this.endDate = null),
+        (this.searchTerm = null),
+        this.fetchData();
+    },
+    applyFilterDate() {
+      // Check if both start and end dates are selected
+      if (this.startDate && this.endDate) {
+        // Convert the selected dates to ISO format
+        const isoStartDate = new Date(this.startDate).toISOString();
+        const isoEndDate = new Date(this.endDate).toISOString();
+
+        // Process the selected date range (e.g., make an API request)
+        console.log("Selected Date Range:");
+        console.log("Start Date:", isoStartDate);
+        console.log("End Date:", isoEndDate);
+
+        // Reset currentPage to 1 when applying a new filter
+        this.currentPage = 1;
+
+        this.fetchData();
+      } else {
+        // Handle the case where one or both dates are not selected
+        // console.log("Please select both start and end dates.");
+        Swal.fire({
+          icon: "warning",
+          title: "Warning!",
+          toast: true,
+          text: "Please select both start and end dates.",
+          timer: 3000,
+          showConfirmButton: false,
+          position: "top-end",
+        });
+      }
+    },
+    shortenFileName(fileName, maxLength = 20) {
+      if (fileName.length > maxLength) {
+        return fileName.slice(0, maxLength) + "...";
+      } else {
+        return fileName;
+      }
+    },
+    openTransactionFilesModal(transaction) {
+      // Replace this logic with fetching the files for the selected transaction
+      // For example, you can populate this.transactionFiles with your file data.
+      this.transactionFiles = transaction.multipleFiles.split(",");
+
+      // Open the modal
+      const modal = document.getElementById("files-modal");
+      modal.style.display = "block";
+    },
+    getFilePath(file) {
+      return `${axios.defaults.baseURL}/${file}`;
+    },
+    formatNumber(number) {
+      // Check if the input is a valid number
+      if (isNaN(number)) {
+        return "Invalid Number";
+      }
+
+      // Convert the number to a string and split it into parts
+      const parts = number.toString().split(".");
+
+      // Format the integer part with commas as thousands separators
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      // Join the integer and decimal parts with a dot
+      return parts.join(".");
+    },
+
+    formatDateWithTime(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
+    },
+    formatCurrency(value) {
+      const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      return formatter.format(value);
+    },
+    isActivePage(page) {
+      return page === this.currentPage;
+    },
+    async fetchData() {
+      try {
+        this.loading = true;
+
+        const token = Cookies.get("token");
+        // Prepare the query parameters for the API request
+        const queryParams = {
+          pageNumber: this.currentPage,
+          pageSize: this.pageSize,
+          searchTerm: this.searchTerm,
+        };
+
+        // Check if both start and end dates are selected
+        if (this.startDate && this.endDate) {
+          queryParams.startDate = this.startDate;
+          queryParams.endDate = this.endDate;
+        }
+        const response = await axios.get("/api/ctransation/getall", {
+          headers: {
+            token: token,
+          },
+          params: queryParams,
+        });
+
+        this.transactions = response.data.transactions;
+        // console.log(response.data.transactions);
+        this.count = response.data.total;
+        this.totalPages = Math.ceil(this.count / this.pageSize);
+
+        // Update the firstEntryIndex and lastEntryIndex values based on the current page and pageSize
+        this.firstEntryIndex = (this.currentPage - 1) * this.pageSize + 1;
+        this.lastEntryIndex = Math.min(
+          this.currentPage * this.pageSize,
+          this.count
+        );
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchDashboardTotals() {
+      try {
+        this.loading = true;
+
+        const token = Cookies.get("token");
+        const response = await axios.get("/api/total/transactionsbystatus", {
+          headers: {
+            token: token,
+          },
+        });
+
+        if (response) {
+          //  const totalTransactions = response.data.totalTransactions;
+          const statusCounts = response.data.statusCounts;
+          this.inprogress = statusCounts["In progress"].totalAmount;
+          this.revoked = statusCounts.Revoked.totalAmount;
+          this.aproved = statusCounts.Aproved.totalAmount;
+          this.pending = statusCounts.Pending.totalAmount;
+          this.completed = statusCounts.Completed.totalAmount;
+          this.canceled = statusCounts.Canceled.totalAmount;
+
+          // count
+          this.inprogressCount = statusCounts["In progress"].count;
+          this.revokedCount = statusCounts.Revoked.count;
+          this.aprovedCount = statusCounts.Aproved.count;
+          this.pendingCount = statusCounts.Pending.count;
+          this.completedCount = statusCounts.Completed.count;
+          this.canceledCount = statusCounts.Canceled.count;
+        } else {
+          this.inprogress = 0;
+          this.revoked = 0;
+          this.aproved = 0;
+          this.pending = 0;
+          this.completed = 0;
+          this.canceled = 0;
+
+          // count
+          this.inprogressCount = 0;
+          this.revokedCount = 0;
+          this.aprovedCount = 0;
+          this.pendingCount = 0;
+          this.completedCount = 0;
+          this.canceledCount = 0;
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchDashboardAVT() {
+      try {
+        this.loading = true;
+
+        const token = Cookies.get("token");
+        const response = await axios.get("/api/get/averageapprovaltime", {
+          headers: {
+            token: token,
+          },
+        });
+
+        const avgt = response.data;
+        this.averageApprovalTime = avgt.averageApprovalTime;
+      } catch (error) {
+        console.error(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    applyFilter() {
+      this.currentPage = 1;
+      this.fetchData();
+    },
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.fetchData();
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.fetchData();
+      }
+    },
+    goToPage(page) {
+      if (page !== this.currentPage) {
+        this.currentPage = page;
+        this.fetchData();
+      }
+    },
+    async changePageSize() {
+      this.currentPage = 1;
+      this.itemsPerPage = this.pageSize;
+      await this.fetchData();
+    },
+    getStatusClass(status) {
+      if (status === "Done") {
+        return "text-success";
+      } else if (status === "Pending") {
+        return "text-pending";
+      } else if (status === "Canceled") {
+        return "text-danger";
+      } else if (status === "Under_approval") {
+        return "text-warning";
+      } else if (status === "Under_assessment") {
+        return "text-muted";
+      } else if (status === "Received") {
+        return "text-primary";
+      } else if (status === "Completed") {
+        return "text-success";
+      } else if (status === "Revoked") {
+        return "text-danger";
+      }
+      {
+        return ""; // Default class if no match
+      }
+    },
     exportToExcel() {
-      // Select the table element
       const table = document.querySelector("table");
-
-      // Convert the table to a workbook object
       const workbook = utils.table_to_book(table);
-
-      // Generate Excel file
       writeFile(workbook, "service_list.xlsx");
     },
     exportToPDF() {
-      // Select the table element
-      const table = document.querySelector('table');
-
-      // Delay the PDF generation until the table data is rendered
+      const table = document.querySelector("table");
       setTimeout(() => {
-        // Create a new html2pdf instance
-        const element = document.createElement('div');
+        const element = document.createElement("div");
         element.appendChild(table);
-        html2pdf().set({ filename: 'transactinos_list.pdf' }).from(element).save();
+        html2pdf()
+          .set({ filename: "transactions_list.pdf" })
+          .from(element)
+          .save();
       }, 500);
-    }
-  
+    },
+  },
+  created() {
+    this.fetchData();
+    this.fetchDashboardTotals();
+    this.fetchDashboardAVT();
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.custom-date-input {
+  width: 150px; /* Adjust the width as needed */
+  padding: 5px; /* Adjust the padding as needed */
+  font-size: 12px; /* Adjust the font size as needed */
+  /* Add any other styles you want to customize the appearance */
+}
+</style>

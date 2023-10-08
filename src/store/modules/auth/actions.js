@@ -26,7 +26,7 @@ export default {
 
     try {
       let response = await axios.post(
-        `http://localhost:8000/api/signup`,
+        `${axios.defaults.baseURL}/api/signup`,
         posData
       )
       if(response.status === 200){
