@@ -101,7 +101,7 @@
                   />
                   <img
                     v-else
-                    src="../../../../dist/images/logow.png"
+                    src="../../../dist/images/logow.png"
                     alt="profilecustomer"
                     class="rounded-full"
                   />

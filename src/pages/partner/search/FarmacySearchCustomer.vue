@@ -59,7 +59,7 @@
                   />
                   <img
                     v-else
-                    src="../../../../dist/images/logow.png"
+                    src="../../../dist/images/logow.png"
                     alt="profilecustomer"
                     class="rounded-full"
                   />
@@ -104,7 +104,7 @@
                   />
                   <img
                     v-else
-                    src="../../../../dist/images/logow.png"
+                    src="../../../dist/images/logow.png"
                     alt="profilecustomer"
                     class="rounded-full"
                   />
@@ -262,7 +262,7 @@
           return `${axios.defaults.baseURL}/${this.avatar.replace("\\", "/")}`;
         }
         // Return a default image URL if the avatar is not available
-        return "../../../../dist/images/logow.png";
+        return "../../../dist/images/logow.png";
       },
     },
   };
