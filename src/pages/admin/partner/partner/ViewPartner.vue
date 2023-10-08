@@ -474,6 +474,7 @@ export default {
     },
   },
   created() {
+    this.axios = axios; // Create a reference to axios
     this.fetchData();
   },
 };

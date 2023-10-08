@@ -613,6 +613,7 @@ export default {
     },
   },
   created() {
+    this.axios = axios; // Create a reference to axios
     this.role = Cookies.get("role");
     this.getProfile();
   },
