@@ -14,7 +14,7 @@ import 'flatpickr/dist/flatpickr.css';
 // Set default base URL for Axios requests
 
 // axios.defaults.baseURL = "http://localhost:8000";
-axios.defaults.baseURL = "https://zeus-api-63pe.onrender.com/api";
+axios.defaults.baseURL = "https://zeus-api-63pe.onrender.com/";
 
 // Add an Axios interceptor for handling 401 status code
 axios.interceptors.response.use(
