@@ -1,34 +1,10 @@
 <template>
   <div>
+    <label v-if="loading" class="shadow-md">
+      <div class="spinner" style="font-size: 18px"></div>
+    </label>
     <div class="intro-y flex items-center mt-8">
       <h2 class="text-lg font-medium mr-auto">Create Template File</h2>
-      <div v-if="loading">
-        <div class="spinner-border text-primary" role="status">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-loader"
-          >
-            <line x1="12" x2="12" y1="2" y2="6" />
-            <line x1="12" x2="12" y1="18" y2="22" />
-            <line x1="4.93" x2="7.76" y1="4.93" y2="7.76" />
-            <line x1="16.24" x2="19.07" y1="16.24" y2="19.07" />
-            <line x1="2" x2="6" y1="12" y2="12" />
-            <line x1="18" x2="22" y1="12" y2="12" />
-            <line x1="4.93" x2="7.76" y1="19.07" y2="16.24" />
-            <line x1="16.24" x2="19.07" y1="7.76" y2="4.93" />
-          </svg>
-          <span class="sr-only">Loading...</span>
-        </div>
-        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-      </div>
     </div>
     <form
       @submit.prevent="onUpdateTemplateFile"
@@ -57,12 +33,10 @@
                 </div>
               </div>
             </div>
-            <div class="grid grid-cols-6 gap-6 mt-3">
-
-            </div>
+            <div class="grid grid-cols-6 gap-6 mt-3"></div>
 
             <div class="grid grid-cols-6 gap-6 mt-5">
-                <div>
+              <div>
                 <label for="crud-form-17" class="form-label">Gender *</label>
                 <div class="input-group">
                   <select
@@ -125,7 +99,7 @@ export default {
   data() {
     return {
       description: "",
-      status:"",
+      status: "",
       fileTemplate: null,
 
       loading: false,
@@ -137,6 +111,7 @@ export default {
       this.$router.go(-1);
     },
     async getTemplate() {
+      this.btnloading = true;
       this.loading = true;
       try {
         const token = Cookies.get("token");
@@ -153,8 +128,9 @@ export default {
         );
         if (response.data.success) {
           this.description = response.data.template.description;
-          this.status = response.data.template.status
+          this.status = response.data.template.status;
           this.loading = false;
+          this.btnloading = false;
         } else {
           throw new Error("Failed to fetch plans");
         }
@@ -204,17 +180,21 @@ export default {
         const formData = new FormData();
         formData.append("description", this.description);
         formData.append("fileTemplate", this.fileTemplate);
-        formData.append("status", this.status)
+        formData.append("status", this.status);
 
         this.btnloading = true;
         this.loading = true;
         const templateId = this.$route.params.templateId;
-        const response = await axios.put(`/api/update/template/${templateId}`, formData, {
-          headers: {
-            token: token,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.put(
+          `/api/update/template/${templateId}`,
+          formData,
+          {
+            headers: {
+              token: token,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         Toast.fire({
           icon: "success",
           title: "Success!",
@@ -264,7 +244,23 @@ export default {
     },
   },
   created() {
-    this.getTemplate()
+    this.getTemplate();
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
