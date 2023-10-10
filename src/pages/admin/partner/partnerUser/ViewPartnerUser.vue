@@ -1,34 +1,10 @@
 <template>
   <div>
-    <h2 class="intro-y text-lg font-medium mt-10">
-      Partner users</h2>
-    <div v-if="loading">
-      <div class="spinner-border text-primary" role="status">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="lucide lucide-loader"
-        >
-          <line x1="12" x2="12" y1="2" y2="6" />
-          <line x1="12" x2="12" y1="18" y2="22" />
-          <line x1="4.93" x2="7.76" y1="4.93" y2="7.76" />
-          <line x1="16.24" x2="19.07" y1="16.24" y2="19.07" />
-          <line x1="2" x2="6" y1="12" y2="12" />
-          <line x1="18" x2="22" y1="12" y2="12" />
-          <line x1="4.93" x2="7.76" y1="19.07" y2="16.24" />
-          <line x1="16.24" x2="19.07" y1="7.76" y2="4.93" />
-        </svg>
-        <span class="sr-only">Loading...</span>
-      </div>
-      <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-    </div>
+    <label v-if="loading" class="shadow-md">
+      <div class="spinner" style="font-size: 18px"></div>
+    </label>
+    <h2 class="intro-y text-lg font-medium mt-10">Partner users</h2>
+
     <div class="grid grid-cols-12 gap-6 mt-5">
       <div
         class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2"
@@ -51,44 +27,42 @@
 
         <!-- add btn -->
         <router-link :to="`/createpartneruser/${this.$route.params.id}`">
-        <div class="intro-y flex flex-col sm:flex-row items-center ml-2">
-          <div class="w-full sm:w-auto flex mt-4 sm:mt-0">
-            <div class="dropdown ml-auto sm:ml-0">
-              <button
-                class="dropdown-toggle btn px-2 box"
-                aria-expanded="false"
-                data-tw-toggle="dropdown"
-              >
-                <span class="w-5 h-5 flex items-center justify-center">
-                
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-plus w-4 h-4"
-                  >
-                    <path d="M5 12h14" />
-                    <path d="M12 5v14" />
-                  </svg>
-                </span>
-              </button>
+          <div class="intro-y flex flex-col sm:flex-row items-center ml-2">
+            <div class="w-full sm:w-auto flex mt-4 sm:mt-0">
+              <div class="dropdown ml-auto sm:ml-0">
+                <button
+                  class="dropdown-toggle btn px-2 box"
+                  aria-expanded="false"
+                  data-tw-toggle="dropdown"
+                >
+                  <span class="w-5 h-5 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-plus w-4 h-4"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="M12 5v14" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </router-link>
+        </router-link>
         <!--  -->
 
         <div class="hidden xl:block mx-auto text-slate-500">
           Showing {{ firstEntryIndex }} to {{ lastEntryIndex }} of
           {{ count }} entries
         </div>
-        
       </div>
 
       <!-- BEGIN: Data List -->
@@ -123,9 +97,16 @@
             <div
               class="lg:ml-2 lg:mr-auto text-center lg:text-left mt-3 lg:mt-0"
             >
-              <a href="#" class="font-medium">{{ partner.firstName }} {{ partner.lastName }}</a>
-              <div class="text-slate-500 text-xs mt-0.5 mb-1">{{ partner.profile }}</div>
-              <div class="lg:text-left mt-3 lg:mt-0" :class="getStatusClass(partner.status)">
+              <a href="#" class="font-medium"
+                >{{ partner.firstName }} {{ partner.lastName }}</a
+              >
+              <div class="text-slate-500 text-xs mt-0.5 mb-1">
+                {{ partner.profile }}
+              </div>
+              <div
+                class="lg:text-left mt-3 lg:mt-0"
+                :class="getStatusClass(partner.status)"
+              >
                 {{ partner.status }}
               </div>
             </div>
@@ -309,16 +290,19 @@ export default {
         this.loading = true;
         const id = this.$route.params.id;
         const token = Cookies.get("token");
-        const response = await axios.get(`/api/user/usersbypartner/${id}/?pageSize=15/`, {
-          headers: {
-            token: token,
-          },
-          params: {
-            pageNumber: this.currentPage,
-            pageSize: this.pageSize,
-            searchTerm: this.searchTerm,
-          },
-        });
+        const response = await axios.get(
+          `/api/user/usersbypartner/${id}/?pageSize=15/`,
+          {
+            headers: {
+              token: token,
+            },
+            params: {
+              pageNumber: this.currentPage,
+              pageSize: this.pageSize,
+              searchTerm: this.searchTerm,
+            },
+          }
+        );
 
         this.allPartners = response.data.allUsers;
         this.count = response.data.count;
@@ -394,3 +378,19 @@ export default {
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

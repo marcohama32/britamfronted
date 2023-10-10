@@ -1,9 +1,10 @@
 <template>
   <div>
-    <h2 class="intro-y text-lg font-medium mt-10">My Transactions</h2>
     <label v-if="loading" class="shadow-md">
       <div class="spinner" style="font-size: 18px"></div>
     </label>
+    <h2 class="intro-y text-lg font-medium mt-10">My Transactions</h2>
+
     <div class="grid grid-cols-12 gap-6 mt-5">
       <div
         class="intro-y col-span-12 flex flex-wrap xl:flex-nowrap items-center mt-2"

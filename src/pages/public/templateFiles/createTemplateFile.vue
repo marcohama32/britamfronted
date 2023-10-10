@@ -1,34 +1,10 @@
 <template>
   <div>
+    <label v-if="loading" class="shadow-md">
+      <div class="spinner" style="font-size: 18px"></div>
+    </label>
     <div class="intro-y flex items-center mt-8">
       <h2 class="text-lg font-medium mr-auto">Create Template File</h2>
-      <div v-if="loading">
-        <div class="spinner-border text-primary" role="status">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-loader"
-          >
-            <line x1="12" x2="12" y1="2" y2="6" />
-            <line x1="12" x2="12" y1="18" y2="22" />
-            <line x1="4.93" x2="7.76" y1="4.93" y2="7.76" />
-            <line x1="16.24" x2="19.07" y1="16.24" y2="19.07" />
-            <line x1="2" x2="6" y1="12" y2="12" />
-            <line x1="18" x2="22" y1="12" y2="12" />
-            <line x1="4.93" x2="7.76" y1="19.07" y2="16.24" />
-            <line x1="16.24" x2="19.07" y1="7.76" y2="4.93" />
-          </svg>
-          <span class="sr-only">Loading...</span>
-        </div>
-        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-      </div>
     </div>
     <form
       @submit.prevent="onCreateTemplateFile"
@@ -120,23 +96,26 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-   
+
     onFileChange(event) {
       const file = event.target.files[0]; // Get the selected file
 
       // Set the file object to the avatar property
       this.fileTemplate = file;
     },
-   
+
     async getMagers() {
       this.loading = true;
       const token = Cookies.get("token");
       try {
-        const response = await axios.get("/api/user/employer/agent/active/get", {
-          headers: {
-            token: token,
-          },
-        });
+        const response = await axios.get(
+          "/api/user/employer/agent/active/get",
+          {
+            headers: {
+              token: token,
+            },
+          }
+        );
         if (response.data.success) {
           this.managers = response.data.employer;
           this.loading = false;
@@ -186,12 +165,16 @@ export default {
         this.btnloading = true;
         this.loading = true;
 
-        const response = await axios.post("/api/filestemplate/create", formData, {
-          headers: {
-            token: token,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.post(
+          "/api/filestemplate/create",
+          formData,
+          {
+            headers: {
+              token: token,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
         Toast.fire({
           icon: "success",
           title: "Success!",
@@ -240,8 +223,22 @@ export default {
       }
     },
   },
-  created() {
-  
-  },
+  created() {},
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
