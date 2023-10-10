@@ -257,12 +257,12 @@
             <div class="mt-4">
               <!-- <label>monthly fee</label> -->
 
-              <label>manager: </label>
-              <input type="text" v-model="manager" disabled />
-              <label>plan: </label>
-              <input type="text" v-model="plan" disabled />
-              <label>company: </label>
-              <input type="text" v-model="company" />
+          
+              <input type="text" v-model="manager" disabled hidden/>
+        
+              <input type="text" v-model="plan" disabled hidden/>
+     
+              <input type="text" v-model="company" hidden/>
             </div>
 
             <div class="text-right mt-8">

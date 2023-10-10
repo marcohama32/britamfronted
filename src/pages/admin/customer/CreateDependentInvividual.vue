@@ -255,12 +255,10 @@
               </div>
             </div>
             <div class="mt-4">
-              <label>monthly fee</label>
-
               <label>manager</label>
-              <input type="text" v-model="manager" disabled />
+              <input type="text" v-model="manager" disabled hidden/>
               <label>plan</label>
-              <input type="text" v-model="plan" disabled />
+              <input type="text" v-model="plan" disabled hidden/>
             </div>
 
             <div class="text-right mt-8">
