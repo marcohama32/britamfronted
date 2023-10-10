@@ -290,7 +290,7 @@ export default {
       const transactionId = this.$route.params.id;
       try {
         const response = await axios.put(
-          `/aprove/transaction/${transactionId}`,
+          `api/aprove/transaction/${transactionId}`,
           {},
           {
             headers: {
@@ -350,7 +350,7 @@ export default {
       const transactionId = this.$route.params.id;
       try {
         const response = await axios.put(
-          `/revoke/transaction/${transactionId}`,
+          `api/revoke/transaction/${transactionId}`,
           {},
           {
             headers: {

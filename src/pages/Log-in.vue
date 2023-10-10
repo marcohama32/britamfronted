@@ -45,6 +45,7 @@
               >
                 Sign In
               </h2>
+              <div v-if="loading" class="spinner" style="font-size: 18px"></div>
               <!-- <div v-if="errors.email" class="invalid-feedback">
                 {{ errors.email[0] }}
               </div> -->
@@ -79,12 +80,12 @@
                 class="intro-x flex text-slate-600 dark:text-slate-500 text-xs sm:text-sm mt-4"
               >
                 <div class="flex items-center mr-auto">
-                  <input
+                  <!-- <input
                     id="remember-me"
                     type="checkbox"
                     class="form-check-input border mr-2"
                   />
-                  <!-- <label class="cursor-pointer select-none" for="remember-me"
+                  <label class="cursor-pointer select-none" for="remember-me"
                     >Remember me</label
                   > -->
                 </div>
@@ -133,6 +134,7 @@ export default {
       email: "",
       password: "",
       btnloading: false,
+      loading: false,
       errors: {},
     };
   },
@@ -145,7 +147,8 @@ export default {
         email: this.email,
         password: this.password,
       };
-
+      this.loading = true;
+      this.btnloading = true;
       axios
         .post("/api/signin", user)
         .then((res) => {
@@ -153,10 +156,11 @@ export default {
           if (res.status === 200) {
             Cookies.set("token", res.data.token, { expires: 7 }); // Store token in a cookie
             Cookies.set("role", res.data.role, { expires: 7 }); // Store role in a cookie
-            this.btnloading = true;
+
             // Emit an event to notify the successful login
             this.$emit("loginSuccess");
-            
+            this.loading = false;
+            this.btnloading = false;
             // Call the beforeRouteEnter navigation guard
             this.$router.go("/");
           }
@@ -176,6 +180,8 @@ export default {
             });
           }
         });
+      this.loading = false;
+      this.btnloading = false;
     },
   },
 
@@ -189,3 +195,19 @@ export default {
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

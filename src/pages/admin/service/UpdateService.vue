@@ -1,8 +1,11 @@
 <template>
   <div>
+    <div v-if="loading" class="spinner" style="font-size: 18px"></div>
+
     <div class="intro-y flex items-center mt-8">
       <h2 class="text-lg font-medium mr-auto">Update service</h2>
-      <div v-if="loading">
+
+      <!-- <div v-if="loading">
         <div class="spinner-border text-primary" role="status">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +31,7 @@
           <span class="sr-only">Loading...</span>
         </div>
         <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-      </div>
+      </div> -->
     </div>
     <form @submit.prevent="onUpdateService">
       <div class="grid grid-cols-12 gap-6 mt-5">
@@ -113,12 +116,11 @@
                 </div>
               </div>
             </div>
-           
-         
-              <div>
-                <label for="crud-form-18" class="form-label">Status</label>
-                <div class="input-group">
-                  <select
+
+            <div>
+              <label for="crud-form-18" class="form-label">Status</label>
+              <div class="input-group">
+                <select
                   v-model="status"
                   class="form-control"
                   aria-label="Default select example"
@@ -126,11 +128,8 @@
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
-                </div>
               </div>
-             
-            
-            
+            </div>
 
             <div class="text-right mt-8">
               <button
@@ -173,7 +172,7 @@ export default {
       planId: "",
 
       status: "",
-      plans:[],
+      plans: [],
       btnloading: false,
       loading: false,
     };
@@ -185,6 +184,7 @@ export default {
     },
   },
   created() {
+    this.axios = axios; // Create a reference to axios
     this.fetchData();
     this.getPlans();
   },
@@ -210,7 +210,13 @@ export default {
     },
     async getPlans() {
       try {
-        const response = await axios.get("/api/allplans");
+        const token = Cookies.get("token");
+        const response = await axios.get("/api/allplans", {
+          headers: {
+            token: token,
+          },
+        });
+
         if (response.data.success) {
           this.plans = response.data.plan;
         } else {
@@ -223,6 +229,7 @@ export default {
     async fetchData() {
       try {
         this.loading = true;
+        this.btnloading = true;
         const id = this.$route.params.id;
         const token = Cookies.get("token");
         const response = await axios.get(`/api/service/${id}`, {
@@ -241,6 +248,7 @@ export default {
         console.error(error);
       } finally {
         this.loading = false;
+        this.btnloading = false;
       }
     },
 
@@ -293,8 +301,6 @@ export default {
         }
       }
 
-     
-
       try {
         // Create FormData object
 
@@ -308,12 +314,16 @@ export default {
         formData.append("planId", this.planId);
 
         this.btnloading = true;
-        const response = await axios.put(`/api/service/update/${id}`, formData, {
-          headers: {
-            token: token,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await axios.put(
+          `/api/service/update/${id}`,
+          formData,
+          {
+            headers: {
+              token: token,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         Toast.fire({
           icon: "success",
@@ -362,3 +372,19 @@ export default {
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

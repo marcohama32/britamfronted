@@ -73,14 +73,15 @@
                 <div class="text-slate-500 mt-1">
                   {{ this.userData.memberShipID }} *
                   {{ this.userData.contact1 }}
-                 
                 </div>
               </div>
               <div
                 class="md:ml-auto md:mr-0 mt-3 md:mt-0 font-medium text-slate-300 dark:text-slate-200 text-center"
               >
                 <router-link :to="`/transactionhitory/${this.userData._id}`">
-                  <button  class="btn btn-outline-primary w-24 inline-block mr-1 mb-2">
+                  <button
+                    class="btn btn-outline-primary w-24 inline-block mr-1 mb-2"
+                  >
                     History
                   </button>
                 </router-link>
@@ -132,7 +133,9 @@
                 class="md:ml-auto md:mr-0 mt-3 md:mt-0 font-medium text-slate-300 dark:text-slate-200 text-center"
               >
                 <router-link :to="`/transactionhitory/${member._id}`">
-                  <button class="btn btn-outline-primary w-24 inline-block mr-1 mb-2">
+                  <button
+                    class="btn btn-outline-primary w-24 inline-block mr-1 mb-2"
+                  >
                     History
                   </button>
                 </router-link>
@@ -181,6 +184,9 @@ export default {
       loading: null,
       myMembers: [],
     };
+  },
+  created() {
+    this.axios = axios; // Create a reference to axios
   },
   methods: {
     getStatusClass(status) {

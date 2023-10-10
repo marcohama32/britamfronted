@@ -2,7 +2,7 @@ git add package.json yarn.lock
 
 git status
 
-git commit -m "updat company"
+git commit -m "updat axios"
 
 git push origin main
 

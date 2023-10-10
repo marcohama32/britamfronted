@@ -30,6 +30,7 @@
                     v-model="serviceId"
                     class="form-control mt-2 sm:mr-2"
                     aria-label="Default select example"
+                    disabled
                   >
                     <option
                       v-for="planItem in plans"

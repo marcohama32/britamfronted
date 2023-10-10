@@ -186,7 +186,7 @@
               <div class="report-chart">
                 <div class="h-[275px]">
                   <!-- <canvas id="report-line-chart" class="mt-6 -mb-6"></canvas> -->
-                  <canvas id="myChart" class="mt-6 -mb-6"></canvas>
+                  <canvas v-if="canvasExists" ref="myChart" class="mt-6 -mb-6"></canvas>
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@
                 class="flex flex-col md:flex-row md:items-center justify-center"
               >
                 <div class="h-[275px]">
-                  <canvas id="service-popularity-chart"></canvas>
+                  <canvas v-if="canvasExists" ref="myChart2"></canvas>
                 </div>
               </div>
             </div>
@@ -418,6 +418,9 @@ export default {
       lastMonthRevenue: "",
       dailyTransactionAmounts: "",
       servicePopularity: "",
+      chartInstance: null, // Add a chart instance property
+      chartInstance2: null, // Add a chart instance property
+      canvasExists: false,
     };
   },
   created() {
@@ -538,9 +541,28 @@ export default {
           const dailyTransactionAmounts = dailyTransactionDates.map(
             (date) => dailyTransactionStats[date].amount
           );
+          // Destroy the existing charts if they exist
+          // Destroy the existing charts if they exist
+          if (this.chartInstance) {
+            this.chartInstance.destroy();
+          }
+          if (this.chartInstance2) {
+            this.chartInstance2.destroy();
+          }
 
-          const ctx = document.getElementById("myChart");
-          new Chart(ctx, {
+          if (this.$refs.myChart && this.$refs.myChart2) {
+            console.error("Canvas exist.");
+            console.log(this.$refs.myChart);
+            console.log(this.$refs.myChart2);
+          } else {
+            console.error("Canvas elements are not available.");
+          }
+          this.canvasExists = true
+
+          // const ctx = document.getElementById("myChart");
+          const ctx = this.$refs.myChart.getContext("2d");
+
+          this.chartInstance = new Chart(ctx, {
             type: "bar",
             data: {
               labels: dailyTransactionDates,
@@ -577,9 +599,10 @@ export default {
             // Add more colors as needed
           ];
 
-          const ctx2 = document.getElementById("service-popularity-chart");
+          // const ctx2 = document.getElementById("myChart2");
+          const ctx2 = this.$refs.myChart2.getContext("2d");
 
-          new Chart(ctx2, {
+          this.chartInstance2 = new Chart(ctx2, {
             type: "doughnut",
             data: {
               labels: servicePopularityData.map((service) => service.label),
@@ -611,6 +634,7 @@ export default {
               },
             },
           });
+          //
         })
         .catch((error) => {
           this.errorMessage =
@@ -619,9 +643,22 @@ export default {
         });
     },
   },
+
   mounted() {
     // this.fetchChatMessages()
-    this.getDashboardData();
+    this.$nextTick(() => {
+    this.getDashboardData(); // Move your chart initialization code here
+  });
+    // this.getDashboardData();
+  },
+  beforeUnmount() {
+    // Ensure that you destroy the charts when the component is about to be destroyed
+    if (this.chartInstance) {
+      this.chartInstance.destroy();
+    }
+    if (this.chartInstance2) {
+      this.chartInstance2.destroy();
+    }
   },
 };
 </script>

@@ -312,7 +312,7 @@ export default {
         this.$router.push("/mytransactions");
         this.isSuccess = true;
         console.log(response);
-        this.$emit("postcreated");
+        this.$emit("transactioncreated");
       } catch (error) {
         if (
           error.response &&
@@ -348,6 +348,7 @@ export default {
     },
   },
   created() {
+    this.axios = axios; // Create a reference to axios
     this.fetch();
   },
 };

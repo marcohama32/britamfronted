@@ -797,44 +797,6 @@ const router = createRouter({
   routes,
 });
 
-// router.beforeEach((to, from, next) => {
-//   const isAuthenticated = Cookies.get("token"); // Retrieve token from cookie
-//   const userRole = Cookies.get("role"); // Retrieve role from cookie
-
-//   // Check if authentication is required and the user is not authenticated
-//   if (
-//     (to.meta.requiresAuth && !isAuthenticated) ||
-//     (!isTokenValid(isAuthenticated) && to.name !== "Login")
-//   ) {
-//     // Clear token and session data on token expiration
-//     Cookies.remove("token");
-//     Cookies.remove("role");
-//     sessionStorage.removeItem("visitedBefore");
-//     window.location.replace("/login");
-//     // Redirect to the login page
-//     return next({ path: "/login" });
-//   }
-
-//   // Redirect users to their respective dashboard based on their role
-//   if (to.path === "/" && isAuthenticated) {
-//     if (userRole === "2") {
-//       return next({ path: "/managerdashboard" });
-//     } else if (userRole === "6") {
-//       return next({ path: "/hospital" });
-//     } else if (userRole === "9") {
-//       return next({ path: "/farmacy" });
-//     }
-//   }
-
-//   // Check if roles are defined and the user role is not included
-//   if (to.meta.roles && !to.meta.roles.includes(userRole)) {
-//     return next({ name: "NotFound" });
-//   }
-
-//   // Allow navigation to the next route
-//   next();
-// });
-
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = Cookies.get("token");
