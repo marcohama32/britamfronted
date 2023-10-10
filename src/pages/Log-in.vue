@@ -141,6 +141,20 @@ export default {
 
   methods: {
     async onLogin() {
+      // Check if both email and password fields are empty
+      if (!this.email || !this.password) {
+        Swal.fire({
+          icon: "warning",
+          title: "Warning!",
+          toast: true,
+          text: "Both email and password are mandatory.",
+          timer: 3000,
+          showConfirmButton: false,
+          position: "top-end",
+        });
+        return;
+      }
+
       try {
         this.loading = true;
         this.btnLoading = true;
@@ -159,12 +173,22 @@ export default {
           this.$router.go("/");
         }
       } catch (error) {
-        this.loading = false;
-        this.btnLoading = false;
-
-        // Handle errors
-        if (error.response && error.response.data && error.response.data.error) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
           this.errors = { email: [error.response.data.error] };
+          console.log(this.errors);
+          Swal.fire({
+            icon: "warning",
+            title: "Warning!",
+            toast: true,
+            text: `${this.errors.email}`,
+            timer: 3000,
+            showConfirmButton: false,
+            position: "top-end",
+          });
         } else {
           // Show a generic error message for unexpected errors
           Swal.fire({
@@ -173,6 +197,9 @@ export default {
             text: "An error occurred. Please try again later.",
           });
         }
+      } finally {
+        this.loading = false;
+        this.btnLoading = false;
       }
     },
   },

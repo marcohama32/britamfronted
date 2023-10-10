@@ -2,11 +2,13 @@ git add package.json yarn.lock
 
 git status
 
-git commit -m "updat axios 2"
+git commit -m "update code"
 
+<!-- on frontend -->
 git push origin main
 
-
+<!-- on backend -->
+git push origin master
 
 +++++++++++++++++++++++++++++++++++++++++++++++
 clean project
