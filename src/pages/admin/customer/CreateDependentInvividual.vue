@@ -354,6 +354,7 @@ export default {
     },
 
     getUser() {
+      this.btnloading = true
       const id = this.$route.params.id;
       const token = Cookies.get("token");
       axios
@@ -364,6 +365,7 @@ export default {
         })
         .then((response) => {
           // Update the component's data with the received response
+          this.btnloading = false
 
           this.plan = response.data.user.plan[0]._id;
           // this.monthlyFee = response.data.user.monthlyFee;

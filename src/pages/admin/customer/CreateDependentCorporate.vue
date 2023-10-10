@@ -262,7 +262,7 @@
         
               <input type="text" v-model="plan" disabled hidden/>
      
-              <input type="text" v-model="company" hidden/>
+              <input type="text" v-model="company" disabled hidden/>
             </div>
 
             <div class="text-right mt-8">
@@ -360,17 +360,18 @@ export default {
     },
 
     getUser() {
+      this.btnloading = true
       const id = this.$route.params.id;
       const token = Cookies.get("token");
       axios
-        .get(`/api/api/user/${id}`, {
+        .get(`api/user/${id}`, {
           headers: {
             token: token,
           },
         })
         .then((response) => {
           // Update the component's data with the received response
-
+          this.btnloading = false
           this.plan = response.data.user.plan[0]._id;
           // this.monthlyFee = response.data.user.monthlyFee;
           this.relation = response.data.user.relation;
