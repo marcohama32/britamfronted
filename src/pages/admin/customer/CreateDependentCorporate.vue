@@ -1,5 +1,8 @@
 <template>
   <div>
+    <label v-if="loading" class="shadow-md">
+      <div class="spinner" style="font-size: 18px"></div>
+    </label>
     <div class="intro-y flex items-center mt-8">
       <h2 class="text-lg font-medium mr-auto">
         Create Dependente for {{ memberFirstName }} {{ memberLastName }}
@@ -257,12 +260,11 @@
             <div class="mt-4">
               <!-- <label>monthly fee</label> -->
 
-          
-              <input type="text" v-model="manager" disabled hidden/>
-        
-              <input type="text" v-model="plan" disabled hidden/>
-     
-              <input type="text" v-model="company" disabled hidden/>
+              <input type="text" v-model="manager" disabled hidden />
+
+              <input type="text" v-model="plan" disabled hidden />
+
+              <input type="text" v-model="company" disabled hidden />
             </div>
 
             <div class="text-right mt-8">
@@ -317,7 +319,7 @@ export default {
       avatar: null,
       memberFirstName: "",
       memberLastName: "",
-      company:"",
+      company: "",
       monthlyFee: "",
       manager: "",
 
@@ -332,11 +334,10 @@ export default {
   watch: {
     id() {
       this.getUser();
-      
     },
   },
   created() {
-    this.getUser(); 
+    this.getUser();
   },
   methods: {
     formatCurrency(value) {
@@ -360,7 +361,8 @@ export default {
     },
 
     getUser() {
-      this.btnloading = true
+      this.btnloading = true;
+      this.loading = true
       const id = this.$route.params.id;
       const token = Cookies.get("token");
       axios
@@ -371,7 +373,8 @@ export default {
         })
         .then((response) => {
           // Update the component's data with the received response
-          this.btnloading = false
+          this.btnloading = false;
+          this.loading = false
           this.plan = response.data.user.plan[0]._id;
           // this.monthlyFee = response.data.user.monthlyFee;
           this.relation = response.data.user.relation;
@@ -379,7 +382,7 @@ export default {
           this.status = response.data.user.status;
           this.memberFirstName = response.data.user.firstName;
           this.memberLastName = response.data.user.lastName;
-          this.company = response.data.user.company
+          this.company = response.data.user.company;
         })
         .catch((error) => {
           this.errorMessage = "Error retrieving this plan. Please try again.";
@@ -491,12 +494,16 @@ export default {
 
         this.btnloading = true;
         const token = Cookies.get("token");
-        const response = await axios.post("/api/user/corporatedependent/create", formData, {
-          headers: {
-            token: token,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.post(
+          "/api/user/corporatedependent/create",
+          formData,
+          {
+            headers: {
+              token: token,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
         Toast.fire({
           icon: "success",
@@ -542,3 +549,19 @@ export default {
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

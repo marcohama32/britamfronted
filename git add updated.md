@@ -1,9 +1,5 @@
-git add package.json yarn.lock
-
-git status
-
+git add package.json yarn.lock / git add .
 git commit -m "update login code"
-
 <!-- on frontend -->
 git push origin main
 

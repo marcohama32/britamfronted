@@ -1,5 +1,8 @@
 <template>
   <div>
+    <label v-if="loading" class="shadow-md">
+      <div class="spinner" style="font-size: 18px"></div>
+    </label>
     <div class="intro-y flex items-center mt-8">
       <h2 class="text-lg font-medium mr-auto">
         Create Dependente for {{ memberFirstName }} {{ memberLastName }}
@@ -255,10 +258,9 @@
               </div>
             </div>
             <div class="mt-4">
-              <label>manager</label>
-              <input type="text" v-model="manager" disabled hidden/>
-              <label>plan</label>
-              <input type="text" v-model="plan" disabled hidden/>
+              <input type="text" v-model="manager" disabled hidden />
+
+              <input type="text" v-model="plan" disabled hidden />
             </div>
 
             <div class="text-right mt-8">
@@ -354,7 +356,8 @@ export default {
     },
 
     getUser() {
-      this.btnloading = true
+      this.loading = true;
+      this.btnloading = true;
       const id = this.$route.params.id;
       const token = Cookies.get("token");
       axios
@@ -365,7 +368,8 @@ export default {
         })
         .then((response) => {
           // Update the component's data with the received response
-          this.btnloading = false
+          this.btnloading = false;
+          this.loading = false;
 
           this.plan = response.data.user.plan[0]._id;
           // this.monthlyFee = response.data.user.monthlyFee;
@@ -540,3 +544,19 @@ export default {
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
