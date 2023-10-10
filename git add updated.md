@@ -2,7 +2,7 @@ git add package.json yarn.lock
 
 git status
 
-git commit -m "update code"
+git commit -m "update login code"
 
 <!-- on frontend -->
 git push origin main
