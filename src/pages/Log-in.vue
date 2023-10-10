@@ -97,7 +97,7 @@
                 <button
                   class="btn btn-primary py-3 px-4 w-full xl:w-32 xl:mr-3 align-top"
                   type="submit"
-                  :disabled="btnloading"
+                  :disabled="btnLoading"
                 >
                   Login
                 </button>
@@ -133,68 +133,61 @@ export default {
     return {
       email: "",
       password: "",
-      btnloading: false,
+      btnLoading: false,
       loading: false,
       errors: {},
     };
   },
 
   methods: {
-    onLogin() {
-      this.btnloading = false;
-      this.errors = {}; // Reset errors object
-      let user = {
-        email: this.email,
-        password: this.password,
-      };
-      this.loading = true;
-      this.btnloading = true;
-      axios
-        .post("/api/signin", user)
-        .then((res) => {
-          // If success
-          if (res.status === 200) {
-            Cookies.set("token", res.data.token, { expires: 7 }); // Store token in a cookie
-            Cookies.set("role", res.data.role, { expires: 7 }); // Store role in a cookie
+    async onLogin() {
+      try {
+        this.loading = true;
+        this.btnLoading = true;
 
-            // Emit an event to notify the successful login
-            this.$emit("loginSuccess");
-            this.loading = false;
-            this.btnloading = false;
-            // Call the beforeRouteEnter navigation guard
-            this.$router.go("/");
-          }
-        })
-        .catch((err) => {
-          if (err.response && err.response.data && err.response.data.error) {
-            this.errors = { email: [err.response.data.error] }; // Set the errors object
-            console.log(this.errors);
-            Swal.fire({
-              icon: "warning",
-              title: "Warning!",
-              toast: true,
-              text: `${this.errors.email}`,
-              timer: 3000,
-              showConfirmButton: false,
-              position: "top-end",
-            });
-          }
-        });
-      this.loading = false;
-      this.btnloading = false;
+        const user = {
+          email: this.email,
+          password: this.password,
+        };
+
+        const res = await axios.post("/api/signin", user);
+
+        if (res.status === 200) {
+          Cookies.set("token", res.data.token, { expires: 7 });
+          Cookies.set("role", res.data.role, { expires: 7 });
+          this.$emit("loginSuccess");
+          this.$router.go("/");
+        }
+      } catch (error) {
+        this.loading = false;
+        this.btnLoading = false;
+
+        // Handle errors
+        if (error.response && error.response.data && error.response.data.error) {
+          this.errors = { email: [error.response.data.error] };
+        } else {
+          // Show a generic error message for unexpected errors
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "An error occurred. Please try again later.",
+          });
+        }
+      }
     },
   },
 
   beforeRouteEnter(to, from, next) {
     const isAuthenticated = Cookies.get("token");
     if (isAuthenticated) {
-      next({ name: "Dashboard" }); // Redirect to dashboard if already authenticated
+      next({ name: "Dashboard" });
     } else {
-      next(); // Continue with the login page
+      next();
     }
   },
 };
 </script>
+
 <style>
 .spinner {
   width: 2em;
