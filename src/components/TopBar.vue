@@ -363,7 +363,9 @@ export default {
     });
 
     // Connect to the SSE endpoint on the server
-    const source = new EventSource("https://localhost/api/notifications");
+    // const source = new EventSource("https://localhost/api/notifications");
+    const source = new EventSource("/api/notifications");
+
 
     // Listen for SSE events
     source.addEventListener("message", (event) => {
@@ -378,7 +380,7 @@ export default {
     const token = Cookies.get("token");
 
     axios
-      .get(`/me`, {
+      .get(`/api/me`, {
         headers: {
           token: token,
           withCredentials: true,
