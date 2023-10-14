@@ -186,7 +186,11 @@
               <div class="report-chart">
                 <div class="h-[275px]">
                   <!-- <canvas id="report-line-chart" class="mt-6 -mb-6"></canvas> -->
-                  <canvas v-if="canvasExists" ref="myChart" class="mt-6 -mb-6"></canvas>
+                  <canvas
+                    v-if="canvasExists"
+                    ref="myChart"
+                    class="mt-6 -mb-6"
+                  ></canvas>
                 </div>
               </div>
             </div>
@@ -551,13 +555,13 @@ export default {
           }
 
           if (this.$refs.myChart && this.$refs.myChart2) {
-            console.error("Canvas exist.");
-            console.log(this.$refs.myChart);
-            console.log(this.$refs.myChart2);
+            // console.error("Canvas exist.");
+            // console.log(this.$refs.myChart);
+            // console.log(this.$refs.myChart2);
           } else {
             console.error("Canvas elements are not available.");
           }
-          this.canvasExists = true
+          this.canvasExists = true;
 
           // const ctx = document.getElementById("myChart");
           const ctx = this.$refs.myChart.getContext("2d");
@@ -645,10 +649,12 @@ export default {
   },
 
   mounted() {
+    console.log("myChart:", this.$refs.myChart);
+    console.log("myChart2:", this.$refs.myChart2);
     // this.fetchChatMessages()
     this.$nextTick(() => {
-    this.getDashboardData(); // Move your chart initialization code here
-  });
+      this.getDashboardData(); // Move your chart initialization code here
+    });
     // this.getDashboardData();
   },
   beforeUnmount() {
