@@ -47,9 +47,13 @@ app.component("notification-component", NotificationComponent);
 
 // Create a socket connection
 // const socket = io("ws://localhost:8000", {
-const socket = io("ws://zeus-api-63pe.onrender.com", {
+// const socket = io("ws://zeus-api-63pe.onrender.com", {
+//   transports: ["websocket", "polling", "flashsocket"],
+// }); // Replace with your server's URL
+
+const socket = io("https://zeus-api-63pe.onrender.com", {
   transports: ["websocket", "polling", "flashsocket"],
-}); // Replace with your server's URL
+});
 
 // Add the socket to the Vue app's prototype
 app.config.globalProperties.$socket = socket;
