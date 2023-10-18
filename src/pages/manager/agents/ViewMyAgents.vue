@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h2 class="intro-y text-lg font-medium mt-10">Costomers</h2>
+      <h2 class="intro-y text-lg font-medium mt-10">My Agents</h2>
   
       <div class="flex justify-center">
         <!-- <router-link to="/createadmin">
@@ -23,7 +23,7 @@
             2
           </button>
         </router-link> -->
-        <router-link to="/createmyagent">
+        <!-- <router-link to="/createmyagent">
           <button
             class="intro-y w-10 h-10 rounded-full btn bg-slate-100 dark:bg-darkmode-400 dark:border-darkmode-400 text-slate-500 mx-2 myborder"
             data-toggle="tooltip"
@@ -32,7 +32,7 @@
           >
             Create Agent
           </button>
-        </router-link>
+        </router-link> -->
       </div>
   
       <div v-if="loading">
@@ -469,6 +469,7 @@
       },
     },
     created() {
+         this.axios = axios; // Create a reference to axios
       this.fetchData();
     },
   };
