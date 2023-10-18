@@ -40,9 +40,13 @@
                   </div>
                 </div>
               </div> -->
+
             <div
               class="chat__chat-list overflow-y-auto scrollbar-hidden pr-1 pt-1 mt-4"
             >
+              <label v-if="loading" class="shadow-md">
+                <div class="spinner" style="font-size: 18px"></div>
+              </label>
               <div
                 v-for="user in users"
                 :key="user._id"
@@ -59,7 +63,7 @@
                         : 'Avatar Image'
                     "
                     alt="partner logo"
-                    :src="`${axiosBaseUrl}/${user.avatar}`"
+                    :src="`${axios.defaults.baseURL}/${user.avatar}`"
                     @error="handleAvatarError"
                     @load="handleAvatarLoad"
                   />
@@ -79,13 +83,13 @@
                     <a href="javascript:;" class="font-medium">
                       {{ user.firstName }} {{ user.lastName }}</a
                     >
-                    <div class="text-xs text-slate-400 ml-auto">
-                      <!-- 01:10 PM -->
-                    </div>
+                    <!-- <div class="text-xs text-slate-400 ml-auto">01:10 PM</div> -->
                   </div>
-                  <div class="w-full truncate text-slate-500 mt-0.5">
-                    {{ user.contact1 }}
-                  </div>
+                  <!-- <div class="w-full truncate text-slate-500 mt-0.5">
+                    It is a long established fact that a reader will be
+                    distracted by the readable content of a page when looking at
+                    its layout. The point of using Lorem
+                  </div> -->
                 </div>
                 <div
                   class="w-5 h-5 text-white text-center rounded-full bg-primary font-medium absolute top-0 right-0 -mt-1 -mr-1"
@@ -122,7 +126,7 @@
                         : 'Avatar Image'
                     "
                     alt="Company logo"
-                    :src="`${axiosBaseUrl}/${avatarCustomer}`"
+                    :src="`${axios.defaults.baseURL}/${avatarCustomer}`"
                     @error="handleAvatarError"
                     @load="handleAvatarLoad"
                   />
@@ -160,12 +164,36 @@
                       aria-expanded="false"
                       data-tw-toggle="dropdown"
                     >
-                      <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                      <!-- <i data-lucide="more-vertical" class="w-4 h-4"></i> -->
                     </a>
                   </div>
                   <div
                     class="bg-primary px-4 py-3 text-white rounded-l-md rounded-t-md"
                   >
+                    <div v-if="isFile(message.senderAvatar)">
+                      <a
+                        :href="`${axios.defaults.baseURL}/${message.senderAvatar}`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >{{ getFileName(message.senderAvatar) }}</a
+                      >
+                    </div>
+                    <div v-else>
+                      <img
+                        v-if="message.senderAvatar"
+                        class=""
+                        :title="
+                          message.avatarUploadDate
+                            ? 'Uploaded at ' + message.avatarUploadDate
+                            : 'Avatar Image'
+                        "
+                        alt="Sender's Avatar"
+                        :src="`${axios.defaults.baseURL}/${message.senderAvatar}`"
+                        @error="handleAvatarError"
+                        @load="handleAvatarLoad"
+                      />
+                    </div>
+
                     {{ message.text }}
                     <div class="mt-1 text-xs text-white text-opacity-80">
                       {{ formatTimestamp(message.timestamp) }}
@@ -183,7 +211,7 @@
                           : 'Avatar Image'
                       "
                       alt="Company logo"
-                      :src="`${axiosBaseUrl}/${message.senderId.avatar}`"
+                      :src="`${axios.defaults.baseURL}/${message.senderId.avatar}`"
                       @error="handleAvatarError"
                       @load="handleAvatarLoad"
                     />
@@ -204,7 +232,7 @@
                     class="w-10 h-10 hidden sm:block flex-none image-fit relative mr-5"
                   >
                     <img
-                      v-if="message.senderId && message.receiverId.avatar"
+                      v-if="message.receiverId && message.receiverId.avatar"
                       class="rounded-full"
                       :title="
                         message.avatarUploadDate
@@ -212,7 +240,7 @@
                           : 'Avatar Image'
                       "
                       alt="Company logo"
-                      :src="`${axiosBaseUrl}/${message.senderId.avatar}`"
+                      :src="`${axios.defaults.baseURL}/${message.senderId.avatar}`"
                       @error="handleAvatarError"
                       @load="handleAvatarLoad"
                     />
@@ -226,7 +254,29 @@
                   <div
                     class="bg-slate-100 dark:bg-darkmode-400 px-4 py-3 text-slate-500 rounded-r-md rounded-t-md"
                   >
-                    {{ message.text }}
+                    <img
+                      v-if="message.receiverAvatar"
+                      class="rounded-full"
+                      :title="
+                        message.avatarUploadDate
+                          ? 'Uploaded at ' + message.avatarUploadDate
+                          : 'Avatar Image'
+                      "
+                      alt="Receiver's Avatar"
+                      :src="`http://localhost:8000/${message.receiverAvatar}`"
+                      @error="handleAvatarError"
+                      @load="handleAvatarLoad"
+                    />
+                    <!-- Display message text (as a link if it's a file) -->
+                    <div v-if="isFile(message.text)">
+                      <a
+                        :href="message.text"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >{{ getFileName(message.text) }}</a
+                      >
+                    </div>
+                    <div v-else>{{ message.text }}</div>
                     <div class="mt-1 text-xs text-slate-500">
                       {{ formatTimestamp(message.timestamp) }}
                     </div>
@@ -237,6 +287,9 @@
 
             <div
               v-if="activechat"
+              enctype="multipart/form-data"
+              data-single="true"
+              action="/file-upload"
               class="pt-4 pb-10 sm:py-4 flex items-center border-t border-slate-200/60 dark:border-darkmode-400"
             >
               <textarea
@@ -264,9 +317,28 @@
                 <div
                   class="w-4 h-4 sm:w-5 sm:h-5 relative text-slate-500 mr-3 sm:mr-5"
                 >
-                  <i data-lucide="paperclip" class="w-full h-full"></i>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-paperclip"
+                  >
+                    <path
+                      d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"
+                    />
+                  </svg>
                   <input
+                    id="fileInput"
+                    ref="fileInput"
                     type="file"
+                    accept=".jpg, .jpeg, .png, .pdf"
+                    @change="onFileChange"
                     class="w-full h-full top-0 left-0 absolute opacity-0"
                   />
                 </div>
@@ -307,7 +379,7 @@
                 />
               </div>
               <div class="mt-3">
-                <div class="font-medium">Hey, Charlize Theron!</div>
+                <div class="font-medium">Hey,</div>
                 <div class="text-slate-500 mt-1">
                   Please select a chat to start messaging.
                 </div>
@@ -326,7 +398,8 @@
 <script>
 import Cookies from "js-cookie";
 import axios from "axios"; // Import Axios library
-
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import "sweetalert2/dist/sweetalert2.css";
 export default {
   components: {
     // Picker,
@@ -350,6 +423,8 @@ export default {
       //   _id: "RECEIVER_USER_ID", // Replace with the ID of the chat partner
       // },
       selectedChat: null,
+       loadingSelect: false,
+      loading: false,
       // axiosBaseUrl: axios.defaults.baseURL,
     };
   },
@@ -358,7 +433,13 @@ export default {
       return axios.defaults.baseURL;
     },
   },
-  mounted() {},
+  mounted() {
+     this.fetchChatMessages()
+  },
+    watch(){
+    this.receiverUser = this.profileId;
+    this.fetchChatMessages()
+  },
   created() {
      this.axios = axios; // Create a reference to axios
     this.fetchUsers();
@@ -403,6 +484,21 @@ export default {
     });
   },
   methods: {
+    isFile(senderAvatar) {
+      // Check if the message text represents a file
+      return /\.(pdf|xlsx)$/i.test(senderAvatar);
+    },
+    getFileName(senderAvatar) {
+      // Extract and return the file name from the URL
+      const parts = senderAvatar.split("/");
+      return parts[parts.length - 1];
+    },
+    onFileChange(event) {
+      const file = event.target.files[0]; // Get the selected file
+
+      // Set the file object to the avatar property
+      this.senderAvatar = file;
+    },
     incrementUnreadCount(userId) {
       // Emit a socket event to increment unread count on the server
       this.$socket.emit("increment-unread-count", userId);
@@ -411,10 +507,21 @@ export default {
       // Emit a socket event to reset unread count on the server
       this.$socket.emit("reset-unread-count", userId);
     },
-    isCurrentUser(message) {
-      const isCurrent = message.senderId._id === this.profileId;
+    // isCurrentUser(message) {
+    //   const isCurrent = message.senderId._id === this.profileId;
 
-      return isCurrent;
+    //   return isCurrent;
+    // },
+    isCurrentUser(message) {
+      // Check if message.senderId exists and has an _id property
+      if (
+        message.senderId &&
+        message.senderId.avatar &&
+        message.senderId._id === this.profileId
+      ) {
+        return true;
+      }
+      return false;
     },
     getProfile() {
       this.loading = true;
@@ -441,14 +548,15 @@ export default {
       this.loading = true;
       const token = Cookies.get("token");
       axios
-        .get("/api/user/manager/allcustomersfromlogedmanager", {
+        .get("api/user/manager/allcustomersfromlogedmanagerchat", {
           headers: {
             token: token,
           },
         })
         .then((response) => {
           this.users = response.data.users;
-          console.log("Usuarios: ", response.data.users);
+          this.loading = false;
+          // console.log("Usuarios: ", response.data.users);
         })
         .catch((error) => {
           this.errorMessage = "Error retrieving this user. Please try again."; // Set the error message
@@ -473,6 +581,7 @@ export default {
       console.log("Attached file:", file);
     },
     selectChat(user) {
+      this.loadingSelect = true;
       this.selectedChat = user;
       this.receiverUser = user._id;
       this.firstName = user.firstName;
@@ -493,7 +602,7 @@ export default {
             headers: { token: token },
           }
         );
-
+        this.loadingSelect = false;
         // Update messages and emit socket event to mark messages as read
         this.messages = response.data.sort((a, b) => {
           return (
@@ -518,33 +627,43 @@ export default {
     },
 
     async sendMessage() {
-      if (this.newMessage.trim() !== "") {
-        const message = {
-          text: this.newMessage,
-          senderId: this.profileId,
-          receiverId: this.receiverUser,
-        };
+      if (
+        (this.newMessage.trim() !== "" || this.senderAvatar) &&
+        !(this.newMessage.trim() === "" && !this.senderAvatar)
+      ) {
+        const message = new FormData();
+        message.append("text", this.newMessage);
+        message.append("senderId", this.profileId);
+        message.append("receiverId", this.receiverUser);
+        message.append("senderAvatar", this.senderAvatar);
+        // alert("senderID", this.profileId)
+        console.log("senderID", this.profileId);
         const token = Cookies.get("token");
         try {
           await axios.post("/api/chat/message", message, {
             headers: {
               token: token,
+              "Content-Type": "multipart/form-data",
             },
           });
 
-          if (message.receiverId === this.selectedChat._id) {
-            // If the receiver is currently selected, push to the left side (receiver's side)
-            this.messages.push({ ...message, senderId: this.selectedChat });
-          } else {
-            // If not, push to the right side (sender's side)
-            this.messages.push(message);
-          }
+          const newMessage = {
+            text: this.newMessage,
+            senderId: this.profileId,
+            // Other message properties...
+          };
+          this.senderAvatar = "";
+          // Determine whether the message is from the current user
+          newMessage.isCurrentUser = true; // Messages sent by the current user should always appear on the right side
+
+          // Push the new message to the messages array
+          this.messages.push(newMessage);
 
           // Clear the new message input
           this.newMessage = "";
 
           // Emit the chat message event
-          this.$socket.emit("chat message", message);
+          this.$socket.emit("chat message", newMessage);
 
           // Emit the notification event
           this.$socket.emit("notification", {
@@ -553,13 +672,32 @@ export default {
           });
 
           // Increment unread count
-          this.incrementUnreadCount(message.receiverId);
+          this.incrementUnreadCount(this.receiverUser);
 
           // Scroll to the bottom of the chat
           this.scrollToBottom();
         } catch (error) {
           console.error("Error sending chat message:", error);
         }
+      } else {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+        Toast.fire({
+          icon: "success",
+          title: "Success!",
+          // title: "Error",
+          text: "Cannot send empty message",
+          timer: 3000,
+        });
       }
     },
 
@@ -601,3 +739,25 @@ export default {
   },
 };
 </script>
+<style>
+.spinner {
+  width: 2em;
+  height: 2em;
+  border-top: 1em solid #99a0ac;
+  border-right: 1em solid transparent;
+  border-radius: 100%;
+  margin: auto;
+  animation: spinner 0.9s linear infinite;
+}
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.custom-date-input {
+  width: 150px; /* Adjust the width as needed */
+  padding: 5px; /* Adjust the padding as needed */
+  font-size: 12px; /* Adjust the font size as needed */
+  /* Add any other styles you want to customize the appearance */
+}
+</style>

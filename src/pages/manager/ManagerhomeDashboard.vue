@@ -282,6 +282,7 @@
                       :key="transactions"
                       class="intro-x"
                     >
+                    <router-link :to="`/customertransactiondetail/${transactions._id}`">
                       <div class="box px-5 py-3 mb-3 flex items-center zoom-in">
                         <div class="ml mr-auto">
                           <div class="font-medium">
@@ -295,6 +296,7 @@
                           {{ formatCurrency(transactions.amount) }}
                         </div>
                       </div>
+                      </router-link>
                     </div>
                   </div>
                   <div v-else>
