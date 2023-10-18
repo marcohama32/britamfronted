@@ -1,6 +1,6 @@
 <template>
   <div>
-    <notification-component />
+ 
     <div class="grid grid-cols-12 gap-6">
       <div class="col-span-12 2xl:col-span-9">
         <div class="grid grid-cols-12 gap-6">
@@ -271,7 +271,7 @@
             >
               <div class="intro-x flex items-center h-10">
                 <h2 class="text-lg font-medium truncate mr-5">
-                  Recent Pending Transactions
+                  Pending Transactions
                 </h2>
               </div>
               <div class="mt-5">
@@ -314,7 +314,7 @@
             >
               <div class="intro-x flex items-center h-10">
                 <h2 class="text-lg font-medium truncate mr-5">
-                  Last Transactions
+                  Latest Transactions
                 </h2>
                 <a href="#" class="ml-auto text-primary truncate">Show More</a>
               </div>

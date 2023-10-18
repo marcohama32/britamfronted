@@ -1,13 +1,12 @@
 <template>
-
-   <div>
-    <!-- <div class="notification-container">
+  <div>
+    <div class="notification-container">
       <router-link
         v-for="notification in notifications"
         :key="notification.id"
         class="alert alert-primary alert-dismissible show flex items-center mb-2 notification"
         role="alert"
-        :to="`/transactions/${notification.transactionId}`"
+        :to="`customertransactiondetail/${notification.transactionId}`"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -49,43 +48,58 @@
           </svg>
         </button>
       </router-link>
-    </div> -->
-   </div>
+    </div>
+  </div>
+</template>
 
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        notifications: [],
-      };
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      notifications: [],
+    };
+  },
+  computed: {
+    axiosBaseUrl() {
+      return axios.defaults.baseURL;
     },
-    created() {
-      // // Connect to the SSE endpoint on the server
-      // const source = new EventSource("http://localhost:8000/api/notifications");
+  },
   
-      // // Listen for SSE events
-      // source.addEventListener("message", (event) => {
-      //   // Parse the event data
-      //   const data = JSON.parse(event.data);
-  
-      //   // Update the notifications array with the received notification data
-      //   this.notifications.push(data);
-      // });
-    },
-  };
-  </script>
-  
-  <style>
-  .notification-container {
-    position: fixed;
-    top: 20px; /* Adjust this value to set the vertical position */
-    right: 20px; /* Adjust this value to set the horizontal position */
-    z-index: 9999; /* Ensure the notification appears on top of other elements */
-    background: none;
-    --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
-  }
-  </style>
-  
+  created() {
+    this.axios = axios; // Create a reference to axios
+    // Connect to the SSE endpoint on the server
+    const source = new EventSource(
+      `${axios.defaults.baseURL}/api/transactionnotifications`
+    );
+
+    // Connect to the SSE endpoint on the server
+    // const source2 = new EventSource(
+    //   `${axios.defaults.baseURL}/api/notifications`
+    // );
+    // Listen for SSE events
+    source.addEventListener("message", (event) => {
+      // Parse the event data
+      const data = JSON.parse(event.data);
+
+      // Update the notifications array with the received notification data
+      this.notifications.push(data);
+    });
+  },
+};
+</script>
+
+<style>
+.notification-container {
+  position: fixed;
+  top: 20px; /* Adjust this value to set the vertical position */
+  right: 20px; /* Adjust this value to set the horizontal position */
+  z-index: 9999; /* Ensure the notification appears on top of other elements */
+  background: none;
+  color: white;
+  --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color),
+    0 8px 10px -6px var(--tw-shadow-color);
+}
+</style>

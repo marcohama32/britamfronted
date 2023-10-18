@@ -138,7 +138,14 @@ export default {
       errors: {},
     };
   },
-
+  computed: {
+    axiosBaseUrl() {
+      return axios.defaults.baseURL;
+    },
+  },
+    created() {
+    this.axios = axios; // Create a reference to axios
+    },
   methods: {
     async onLogin() {
       // Check if both email and password fields are empty
@@ -164,7 +171,7 @@ export default {
           password: this.password,
         };
 
-        const res = await axios.post("/api/signin", user);
+        const res = await this.axios.post("/api/signin", user);
 
         if (res.status === 200) {
           Cookies.set("token", res.data.token, { expires: 7 });

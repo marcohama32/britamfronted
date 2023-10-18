@@ -1,4 +1,5 @@
 <template>
+     <notification-component />
   <div class="notification-container">
     <router-link
       v-for="notification in notifications"
@@ -357,8 +358,8 @@ export default {
   created() {
     this.getProfile();
     // Listen for the "notification" event
-    this.$socket.on("notification", (notificationMessage) => {
-      console.log("Received notification:", notificationMessage);
+    this.$socket.on("transactionnotifications", (notificationMessage) => {
+      console.log("Received transaction notification:", notificationMessage);
       this.notifications.push(notificationMessage);
     });
 
