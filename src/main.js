@@ -13,8 +13,8 @@ import VueFlatpickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 // Set default base URL for Axios requests
 
-axios.defaults.baseURL = "http://localhost:8000";
-// axios.defaults.baseURL = "https://zeus-api-63pe.onrender.com";
+// axios.defaults.baseURL = "http://localhost:8000";
+axios.defaults.baseURL = "https://zeus-api-63pe.onrender.com";
 
 // Add an Axios interceptor for handling 401 status code
 axios.interceptors.response.use(
@@ -50,8 +50,8 @@ app.component("notification-component", NotificationComponent);
 // const socket = io("ws://zeus-api-63pe.onrender.com", {
 //   transports: ["websocket", "polling", "flashsocket"],
 // }); // Replace with your server's URL
-const socket = io("ws://localhost:8000", {
-// const socket = io("https://zeus-api-63pe.onrender.com", {
+// const socket = io("ws://localhost:8000", {
+const socket = io("https://zeus-api-63pe.onrender.com", {
   transports: ["websocket", "polling", "flashsocket"],
 });
 

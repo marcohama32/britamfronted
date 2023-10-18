@@ -3,7 +3,7 @@
     <label v-if="loading" class="shadow-md">
       <div class="spinner" style="font-size: 18px"></div>
     </label>
-    <h2 class="intro-y text-lg font-medium mt-10">All Customers</h2>
+    <h2 class="intro-y text-lg font-medium mt-10">My Customers</h2>
 
     <div class="grid grid-cols-12 gap-6 mt-5">
       <div
