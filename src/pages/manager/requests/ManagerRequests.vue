@@ -480,7 +480,7 @@ export default {
           console.log("Card id: ", cardToMove._id);
 
           await axios.put(
-            `/request/status/${cardToMove._id}`,
+            `/api/request/status/${cardToMove._id}`,
             { status },
             {
               headers: {

@@ -372,7 +372,8 @@ export default {
       return page === this.currentPage;
     },
     getFilePath(file) {
-      return `http://localhost:8000/${file}`;
+       return `${axios.defaults.baseURL}/${file}`;
+      // return `http://localhost:8000/${file}`;
     },
     async fetchData() {
       try {
@@ -480,7 +481,7 @@ export default {
           console.log("Card id: ", cardToMove._id);
 
           await axios.put(
-            `/request/status/${cardToMove._id}`,
+            `/api/request/status/${cardToMove._id}`,
             { status },
             {
               headers: {
