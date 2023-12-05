@@ -37,8 +37,9 @@
         Back
       </button>
       <div>
-        <button class="btn btn-primary mt-5" @click="DonloadInvoice">
+        <button class="btn btn-primary mt-5" @click="DonloadInvoice" :disabled="loading">
           Download
+          
         </button>
       </div>
     </div>
@@ -195,7 +196,7 @@ export default {
 
       try {
         const response = await axios.get(
-          `/api/get/customerinvoice/${transactionId}`,
+          `/api/get/britamcustomerinvoice/${transactionId}`,
           {
             headers: {
               token: token,

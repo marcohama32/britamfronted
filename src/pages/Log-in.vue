@@ -10,7 +10,7 @@
               class="w-6"
               src="../logo.png"
             />
-            <span class="text-white text-lg ml-3"> Mediplus </span>
+            <span class="text-white text-lg ml-3"> Britam </span>
           </a>
           <div class="my-auto">
             <img
@@ -122,6 +122,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";

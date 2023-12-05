@@ -3,7 +3,7 @@
     <nav class="side-nav">
       <router-link to="/" class="intro-x flex items-center pl-5 pt-4 mt-3">
         <img alt="logo" class="w-6" src="../logo.png" />
-        <span class="hidden xl:block text-white text-lg ml-3"> Mediplus </span>
+        <span class="hidden xl:block text-white text-lg ml-3"> Britam </span>
       </router-link>
       <div class="side-nav__devider my-6"></div>
       <ul>
