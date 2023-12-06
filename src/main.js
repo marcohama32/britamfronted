@@ -7,10 +7,10 @@ import router from "./router/router";
 import store from "./store/store";
 import NotificationComponent from "./components/NotificationComponent.vue";
 import io from "socket.io-client";
-import VueFlatpickr from 'vue-flatpickr-component';
+import VueFlatpickr from "vue-flatpickr-component";
 
 // Import the Flatpickr CSS
-import 'flatpickr/dist/flatpickr.css';
+import "flatpickr/dist/flatpickr.css";
 // Set default base URL for Axios requests
 
 // axios.defaults.baseURL = "http://localhost:8000";
@@ -34,7 +34,6 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
 
 const app = createApp(App);
 
@@ -66,12 +65,9 @@ socket.on("connect", () => {
   app.config.globalProperties.$socketStatus = "connected";
 });
 
-
-
-
 socket.on("disconnect", () => {
   console.log("Socket disconnected");
   app.config.globalProperties.$socketStatus = "disconnected";
 });
-app.component('vue-flatpickr', VueFlatpickr);
+app.component("vue-flatpickr", VueFlatpickr);
 app.mount("#app");

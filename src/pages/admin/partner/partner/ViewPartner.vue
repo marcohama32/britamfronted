@@ -174,7 +174,7 @@
                       >Employees</router-link
                     >
                   </a>
-                  <a
+                  <!-- <a
                     class="flex items-center text-primary whitespace-nowrap mr-5"
                     href="javascript:;"
                   >
@@ -195,10 +195,10 @@
                         d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
                       />
                     </svg>
-                    <router-link :to="`/viewpartneruser/${partner._id}`"
+                    <router-link :to="`/viewcompanytransactions/${partner._id}`"
                       >Transactions</router-link
                     >
-                  </a>
+                  </a> -->
                 </div>
               </td>
             </tr>

@@ -83,7 +83,7 @@
                     : 'Avatar Image'
                 "
                 alt="partner logo"
-                :src="`${axios.defaults.baseURL}/${partner.avatar}`"
+                :src="`${baseURL}/${partner.avatar}`"
                 @error="handleAvatarError"
                 @load="handleAvatarLoad"
               />
